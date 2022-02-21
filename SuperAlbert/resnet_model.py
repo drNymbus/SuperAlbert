@@ -5,7 +5,7 @@ from torchvision import transforms
 from torchvision.datasets import ImageFolder
 import torchvision.models as models
 
-def create_model(nb_class, gpu=True):
+def create_pretrained_resnet(nb_class):
     # Loading pretrained model
     model = models.resnet18(pretrained=True)
 
