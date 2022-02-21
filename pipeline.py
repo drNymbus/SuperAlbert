@@ -1,4 +1,4 @@
-from sklearn.metrics import f1_score, top_k_accuracy_score
+#from sklearn.metrics import f1_score, top_k_accuracy_score
 
 import numpy as np
 import math
@@ -107,13 +107,13 @@ def test_model(model, dataset, device=None, NB_CLASSES=1081):
 
     print(y_true, predictions_score)
 
-    f_score = f1_score(y_true, predictions, average="weighted")
-    f_score_macro = f1_score(y_true, predictions, average="macro")
+    #f_score = f1_score(y_true, predictions, average="weighted")
+    #f_score_macro = f1_score(y_true, predictions, average="macro")
     # top_k_score = top_k_accuracy_score(y_true, predictions_score)
 
     return {
-        'f_weighted': f_score,
-        'f_macro' : f_score_macro,
+        'f_weighted': -1,#f_score,
+        'f_macro' : -1,#f_score_macro,
         'top_k': -1
     }
 
