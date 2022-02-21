@@ -11,7 +11,7 @@ from collections import OrderedDict
 
 def create_model(input_size, output_size):
     # Loading pretrained model
-    model = models.efficientnet_b7(pretrained=True)
+    model = torch.hub.load('NVIDIA/DeepLearningExamples:torchhub', 'nvidia_efficientnet_b7', pretrained=True)
     # setting all parameters as constants
     for p in model.parameters():
         p.requires_grad = False
