@@ -7,7 +7,7 @@ from SuperAlbert.model import *
 
 if __name__ == "__main__":
     RESULTS_PATH = utils.create_model_dir("efficientnet_CCE_v1")
-    BATCH_SIZE = 256
+    BATCH_SIZE = 128
     # data loading
     # data_loaders, image_datasets, idx_to_class = collector.get_datasets("../data/", batch_size=BATCH_SIZE, num_workers=4)
     data_loaders, image_datasets, idx_to_class = collector.get_datasets("/home/data/challenge_2022_miashs/", batch_size=BATCH_SIZE, num_workers=16)

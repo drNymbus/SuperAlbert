@@ -84,26 +84,21 @@ def train_model(model, dataset, criterion, optimizer, decay, batch_size=128, num
         f.write("e, loss\n")
 
 
+    # Split train and test data
+    train_len = int(len(dataset.dataset)*0.8)
+    test_len = len(dataset.dataset) - train_len
+    trainset, testset = torch.utils.data.random_split(dataset.dataset, [train_len, test_len])
+    trainset = torch.utils.data.DataLoader(dataset=trainset, batch_size=batch_size,
+                                            num_workers=num_workers, pin_memory=False)
+    testset = torch.utils.data.DataLoader(dataset=testset, batch_size=batch_size,
+                                            num_workers=num_workers, pin_memory=False)
+
     for epoch in range(num_epochs):
         print('Epoch {}/{}'.format(epoch+1, num_epochs))
         print('-' * 10)
 
         running_loss = 0.0
         # running_corrects = 0
-
-        # Split train and test data
-        train_len = int(len(dataset.dataset)*0.8)
-        test_len = len(dataset.dataset) - train_len
-        trainset, testset = torch.utils.data.random_split(dataset.dataset, [train_len, test_len])
-
-        # x: torch.utils.data.DataLoader(image_datasets[x], batch_size=batch_size,
-        #                             shuffle=True if x == 'train' else False,
-        #                             num_workers=num_workers) for x in ['train', 'test']
-        # trainset = dataset
-        trainset = torch.utils.data.DataLoader(dataset=trainset, batch_size=batch_size,
-                                                num_workers=num_workers, pin_memory=False)
-        testset = torch.utils.data.DataLoader(dataset=testset, batch_size=batch_size,
-                                                num_workers=num_workers, pin_memory=False)
 
         # Iterate over data.
         for i, item in enumerate(trainset):

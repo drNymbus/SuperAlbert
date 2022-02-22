@@ -35,9 +35,7 @@ def get_datasets(data_dir, input_size=224, batch_size=128, num_workers=16):
 
     # Create training and validation dataloaders
     data_loaders = {
-        x: torch.utils.data.DataLoader(image_datasets[x], batch_size=batch_size,
-                                    shuffle=True if x == 'train' else False,
-                                    num_workers=num_workers) for x in ['train', 'test']
+        x: torch.utils.data.DataLoader(image_datasets[x]) for x in ['train', 'test']
     }
 
     idx_to_class = {v: k for k, v in image_datasets['train'].class_to_idx.items()}
@@ -45,14 +43,14 @@ def get_datasets(data_dir, input_size=224, batch_size=128, num_workers=16):
     return data_loaders, image_datasets, idx_to_class
 
 if __name__ == "__main__":
-    train, test, idx_to_class = get_datasets("./data/", batch_size=1)
-    labels_dist = {}
-    for inputs, labels in train:
-        # print(inputs.shape, idx_to_class[labels])
-        cls = labels[0]
-        if cls in labels_dist:
-            labels_dist[cls] += 1
-        else:
-            labels_dist[cls] = 1
+    train, test, idx_to_class = get_datasets("../data_testing/", batch_size=1)
+    # labels_dist = {}
+    # for inputs, labels in train:
+    #     # print(inputs.shape, idx_to_class[labels])
+    #     cls = labels[0]
+    #     if cls in labels_dist:
+    #         labels_dist[cls] += 1
+    #     else:
+    #         labels_dist[cls] = 1
 
-    print(labels_dist)
+    print(train)
