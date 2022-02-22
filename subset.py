@@ -76,9 +76,9 @@ def subset(nb_classes, nb_images, folder='train', organ='flower'):
         new_dict[key] = random.sample(dict_[key], nb_images)
         
     # print(new_dict)    
-        
-    if not os.path.exists('new_train'):
-        os.makedirs('new_train')
+    
+    if not os.path.exists('/home/data/challenge_2022_miashs/new_train'):
+        os.makedirs('/home/data/challenge_2022_miashs/new_train')
         print("Le dossier new_train a été créé !")
     else:
         print("Les fichiers vont maintenant être copiés dans le dossier new_train")
@@ -88,15 +88,19 @@ def subset(nb_classes, nb_images, folder='train', organ='flower'):
     
     for key in new_dict.keys():
         fold = key.split('/')[1]
-        if not os.path.exists('new_train/{}'.format(fold)):
-            os.makedirs('new_train/{}'.format(fold))
+        if not os.path.exists('/home/data/challenge_2022_miashs/new_train/{}'.format(fold)):
+            os.makedirs('/home/data/challenge_2022_miashs/new_train/{}'.format(fold))
         
         for file in new_dict[key]:
             # print(file)
-            shutil.copy('{}/{}.jpg'.format(key, file), 'new_train/{}/'.format(fold))
+            shutil.copy('/home/data/challenge_2022_miashs/{}/{}.jpg'.format(key, file), '/home/data/challenge_2022_miashs/new_train/{}/'.format(fold))
             new_df.loc[file] = df.loc[file, :]
     
     new_df.to_json('new_dataset.json', orient='index')
     print('Le fichier new_dataset.json a été généré avec succès !')
     
     return "La copie a été réalisée avec succès"
+
+
+if __name__ == "__main__":
+    subset(nb_classes=1081, nb_images=1, folder='train', organ='')
