@@ -88,16 +88,16 @@ def train_model(model, dataset, criterion, optimizer, decay, batch_size=128, num
         # running_corrects = 0
 
         # Split train and test data
-        train_len = int(len(dataset.dataset)*0.8)
-        test_len = len(dataset.dataset) - train_len
-        trainset, testset = torch.utils.data.random_split(dataset.dataset, [train_len, test_len])
+        # train_len = int(len(dataset.dataset)*0.8)
+        # test_len = len(dataset.dataset) - train_len
+        # trainset, testset = torch.utils.data.random_split(dataset.dataset, [train_len, test_len])
 
         # x: torch.utils.data.DataLoader(image_datasets[x], batch_size=batch_size,
         #                             shuffle=True if x == 'train' else False,
         #                             num_workers=num_workers) for x in ['train', 'test']
-
-        trainset = torch.utils.data.DataLoader(dataset=trainset, batch_size=batch_size, num_workers=num_workers)
-        testset = torch.utils.data.DataLoader(dataset=testset, batch_size=batch_size, num_workers=num_workers)
+        trainset = dataset
+        # trainset = torch.utils.data.DataLoader(dataset=trainset, batch_size=batch_size, num_workers=num_workers)
+        # testset = torch.utils.data.DataLoader(dataset=testset, batch_size=batch_size, num_workers=num_workers)
 
         # Iterate over data.
         for i, item in enumerate(trainset):
@@ -121,9 +121,7 @@ def train_model(model, dataset, criterion, optimizer, decay, batch_size=128, num
 
             # statistics
             running_loss += loss.item() * inputs.size(0)
-            
-            if (i % 100 == 1):
-                print("({}/{})Batch loss: {}".format(i+1, len(trainset), loss.item()), end="")
+            print("({}/{})Batch loss: {}\r".format(i+1, len(trainset), loss.item()), end="")
             # running_corrects += torch.sum(preds == labels.data)
 
         # Compute Loss
@@ -131,9 +129,10 @@ def train_model(model, dataset, criterion, optimizer, decay, batch_size=128, num
         print('{} Loss: {:.4f}'.format(epoch, epoch_loss))
 
         # Evaluate model
-        score = test_model(model, testset, device=device)
-        print('{} Score: '.format(epoch))
-        print('\tf_measure(weighted)={}\n\tf_measure(macro)={}\n\ttop_k={}'.format(score["f_weighted"], score["f_macro"], score["top_k"]))
+        # score = test_model(model, testset, device=device)
+        score = None
+        # print('{} Score: '.format(epoch))
+        # print('\tf_measure(weighted)={}\n\tf_measure(macro)={}\n\ttop_k={}'.format(score["f_weighted"], score["f_macro"], score["top_k"]))
 
         decay.step()
 
