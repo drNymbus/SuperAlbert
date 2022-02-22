@@ -101,9 +101,9 @@ def train_model(model, dataset, criterion, optimizer, decay, batch_size=128, num
         #                             num_workers=num_workers) for x in ['train', 'test']
         # trainset = dataset
         trainset = torch.utils.data.DataLoader(dataset=trainset, batch_size=batch_size,
-                                                num_workers=num_workers, pin_memory=True)
+                                                num_workers=num_workers, pin_memory=False)
         testset = torch.utils.data.DataLoader(dataset=testset, batch_size=batch_size,
-                                                num_workers=num_workers, pin_memory=True)
+                                                num_workers=num_workers, pin_memory=False)
 
         # Iterate over data.
         for i, item in enumerate(trainset):
