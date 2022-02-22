@@ -80,6 +80,10 @@ def train_model(model, dataset, criterion, optimizer, decay, batch_size=128, num
     since = time.time()
     history = {}
 
+    with open("results/log.txt", 'a') as f:
+        f.write("e, loss\n")
+
+
     for epoch in range(num_epochs):
         print('Epoch {}/{}'.format(epoch+1, num_epochs))
         print('-' * 10)
@@ -96,13 +100,14 @@ def train_model(model, dataset, criterion, optimizer, decay, batch_size=128, num
         #                             shuffle=True if x == 'train' else False,
         #                             num_workers=num_workers) for x in ['train', 'test']
         # trainset = dataset
-        trainset = torch.utils.data.DataLoader(dataset=trainset, batch_size=batch_size, num_workers=num_workers, pin_memory=True)
-        testset = torch.utils.data.DataLoader(dataset=testset, batch_size=batch_size, num_workers=num_workers, pin_memory=True)
+        trainset = torch.utils.data.DataLoader(dataset=trainset, batch_size=batch_size,
+                                                num_workers=num_workers, pin_memory=True)
+        testset = torch.utils.data.DataLoader(dataset=testset, batch_size=batch_size,
+                                                num_workers=num_workers, pin_memory=True)
 
         # Iterate over data.
         for i, item in enumerate(trainset):
             inputs, labels = item
-            print(inputs.shape, labels.shape)
             if device is not None:
                 inputs = inputs.to(device)
                 labels = labels.to(device)
@@ -132,16 +137,17 @@ def train_model(model, dataset, criterion, optimizer, decay, batch_size=128, num
 
         # Evaluate model
         # score = test_model(model, testset, device=device)
-        score = None
         # print('{} Score: '.format(epoch))
         # print('\tf_measure(weighted)={}\n\tf_measure(macro)={}\n\ttop_k={}'.format(score["f_weighted"], score["f_macro"], score["top_k"]))
 
         decay.step()
 
-        history[epoch] = {
-            "loss" : epoch_loss,
-            "score" : score
-        }
+        # history[epoch] = {
+        #     "loss" : epoch_loss,
+        #     "score" : score
+        # }
+        with open("results/log.txt", 'a') as f:
+            f.write("{epoch}, {epoch_loss}")
 
         print()
 
