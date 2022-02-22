@@ -62,7 +62,7 @@ def test_model(model, dataset, device=None):
             outputs = model(inputs)
 
             predictions.append(outputs.argmax(dim=1).item())
-            predictions_score.append(list(outputs.numpy()[0]))
+            predictions_score.append(list(outputs.cpu().numpy()[0]))
 
             y_true.append(labels.item())
 
@@ -76,7 +76,8 @@ def test_model(model, dataset, device=None):
         'top_k': -1#top_k_score
     }
 
-def train_model(model, dataset, criterion, optimizer, decay, num_epochs=5, device=None):
+def train_model(model, dataset, criterion, optimizer, decay, batch_size=128, num_epochs=5, device=None):
+    #print(device)
     since = time.time()
     history = {}
 
@@ -92,12 +93,13 @@ def train_model(model, dataset, criterion, optimizer, decay, num_epochs=5, devic
         test_len = len(dataset.dataset) - train_len
         trainset, testset = torch.utils.data.random_split(dataset.dataset, [train_len, test_len])
 
-        trainset = torch.utils.data.DataLoader(dataset=trainset)
-        testset = torch.utils.data.DataLoader(dataset=testset)
+        trainset = torch.utils.data.DataLoader(dataset=trainset, batch_size=batch_size)
+        testset = torch.utils.data.DataLoader(dataset=testset, batch_size=batch_size)
 
         # Iterate over data.
         for i, item in enumerate(trainset):
             inputs, labels = item
+#            print("device is :", device)
             if device is not None:
                 inputs = inputs.to(device)
                 labels = labels.to(device)

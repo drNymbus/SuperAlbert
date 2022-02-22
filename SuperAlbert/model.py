@@ -11,7 +11,7 @@ import torchvision.models as models
 
 def create_model(output_size):
     # Loading pretrained model
-    model = models.efficientnet_b7(pretrained=True)
+    model = models.efficientnet_b4(pretrained=True)
     # setting all parameters as constants
     for p in model.parameters():
         p.requires_grad = False
