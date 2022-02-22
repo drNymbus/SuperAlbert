@@ -76,8 +76,7 @@ def test_model(model, dataset, device=None):
         'top_k': -1#top_k_score
     }
 
-def train_model(model, dataset, criterion, optimizer, decay, batch_size=128, num_epochs=5, device=None):
-    #print(device)
+def train_model(model, dataset, criterion, optimizer, decay, batch_size=128, num_epochs=5, num_workers=16, device=None):
     since = time.time()
     history = {}
 
@@ -93,13 +92,16 @@ def train_model(model, dataset, criterion, optimizer, decay, batch_size=128, num
         test_len = len(dataset.dataset) - train_len
         trainset, testset = torch.utils.data.random_split(dataset.dataset, [train_len, test_len])
 
-        trainset = torch.utils.data.DataLoader(dataset=trainset, batch_size=batch_size)
-        testset = torch.utils.data.DataLoader(dataset=testset, batch_size=batch_size)
+        # x: torch.utils.data.DataLoader(image_datasets[x], batch_size=batch_size,
+        #                             shuffle=True if x == 'train' else False,
+        #                             num_workers=num_workers) for x in ['train', 'test']
+
+        trainset = torch.utils.data.DataLoader(dataset=trainset, batch_size=batch_size, num_workers=num_workers)
+        testset = torch.utils.data.DataLoader(dataset=testset, batch_size=batch_size, num_workers=num_workers)
 
         # Iterate over data.
         for i, item in enumerate(trainset):
             inputs, labels = item
-#            print("device is :", device)
             if device is not None:
                 inputs = inputs.to(device)
                 labels = labels.to(device)
@@ -120,7 +122,6 @@ def train_model(model, dataset, criterion, optimizer, decay, batch_size=128, num
             # statistics
             running_loss += loss.item() * inputs.size(0)
             print("({}/{})Batch loss: {}\r".format(i+1, len(trainset), loss.item()), end="")
-            # print("\r")
             # running_corrects += torch.sum(preds == labels.data)
 
         # Compute Loss
