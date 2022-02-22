@@ -36,7 +36,7 @@ def subset(nb_classes, nb_images, folder='train', organ='flower'):
     
     df = pd.read_json('dataset.json', orient='index')
     
-    if organ=='flower':
+    if organ:
         dict_ = {}
         for dir_ in classes:
             # print(dir_)
@@ -44,7 +44,7 @@ def subset(nb_classes, nb_images, folder='train', organ='flower'):
             files = [f for f in listdir(dir_) if isfile(join(dir_, f))]
             for file in files:
                 id_f = file.split('.')[0]
-                if df.loc[id_f, 'organ']=='flower':
+                if df.loc[id_f, 'organ']==organ:
                     flowers.append(id_f)
             # print(flowers)
             if len(flowers) >= nb_images:
