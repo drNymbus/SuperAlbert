@@ -76,7 +76,7 @@ def test_model(model, dataset, device=None):
         'top_k': -1#top_k_score
     }
 
-def train_model(model, dataset, criterion, optimizer, decay, batch_size=128, num_epochs=5, num_workers=16, device=None):
+def train_model(model, dataset, criterion, optimizer, decay, batch_size=128, num_epochs=5, num_workers=16, device="cpu"):
     since = time.time()
     history = {}
 
@@ -88,8 +88,10 @@ def train_model(model, dataset, criterion, optimizer, decay, batch_size=128, num
     train_len = int(len(dataset.dataset)*0.8)
     test_len = len(dataset.dataset) - train_len
     trainset, testset = torch.utils.data.random_split(dataset.dataset, [train_len, test_len])
+    # trainset = trainset.to(device)
     trainset = torch.utils.data.DataLoader(dataset=trainset, batch_size=batch_size,
-                                            num_workers=num_workers, pin_memory=False).to(device)
+                                            num_workers=num_workers, pin_memory=False)
+    
 
     for epoch in range(num_epochs):
         print('Epoch {}/{}'.format(epoch+1, num_epochs))
@@ -102,8 +104,8 @@ def train_model(model, dataset, criterion, optimizer, decay, batch_size=128, num
         for i, item in enumerate(trainset):
             inputs, labels = item
             # if device is not None:
-            #     inputs = inputs.to(device)
-            #     labels = labels.to(device)
+            inputs = inputs.to(device)
+            labels = labels.to(device)
 
             # zero the parameter gradients
             optimizer.zero_grad()
