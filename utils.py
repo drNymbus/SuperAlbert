@@ -96,7 +96,8 @@ def train_model(model, dataset, criterion, optimizer, decay, num_epochs=5, devic
         testset = torch.utils.data.DataLoader(dataset=testset)
 
         # Iterate over data.
-        for inputs, labels in trainset:
+        for i, item in enumerate(trainset):
+            inputs, labels = item
             if device is not None:
                 inputs = inputs.to(device)
                 labels = labels.to(device)
@@ -116,7 +117,8 @@ def train_model(model, dataset, criterion, optimizer, decay, num_epochs=5, devic
 
             # statistics
             running_loss += loss.item() * inputs.size(0)
-            print("Batch loss: ", loss.item())
+            print("({}/{})Batch loss: {}\r".format(i+1, len(trainset), loss.item()), end="")
+            # print("\r")
             # running_corrects += torch.sum(preds == labels.data)
 
         # Compute Loss
