@@ -90,8 +90,6 @@ def train_model(model, dataset, criterion, optimizer, decay, batch_size=128, num
     trainset, testset = torch.utils.data.random_split(dataset.dataset, [train_len, test_len])
     trainset = torch.utils.data.DataLoader(dataset=trainset, batch_size=batch_size,
                                             num_workers=num_workers, pin_memory=False)
-    testset = torch.utils.data.DataLoader(dataset=testset, batch_size=batch_size,
-                                            num_workers=num_workers, pin_memory=False)
 
     for epoch in range(num_epochs):
         print('Epoch {}/{}'.format(epoch+1, num_epochs))
@@ -131,6 +129,8 @@ def train_model(model, dataset, criterion, optimizer, decay, batch_size=128, num
         print('{} Loss: {:.4f}'.format(epoch, epoch_loss))
 
         # Evaluate model
+        # testset = torch.utils.data.DataLoader(dataset=testset, batch_size=batch_size,
+        #                                         num_workers=num_workers, pin_memory=False)
         # score = test_model(model, testset, device=device)
         # print('{} Score: '.format(epoch))
         # print('\tf_measure(weighted)={}\n\tf_measure(macro)={}\n\ttop_k={}'.format(score["f_weighted"], score["f_macro"], score["top_k"]))
