@@ -88,7 +88,7 @@ def train_model(model, dataset, criterion, optimizer, decay, batch_size=128, num
     train_len = int(len(dataset.dataset)*0.8)
     test_len = len(dataset.dataset) - train_len
     trainset, testset = torch.utils.data.random_split(dataset.dataset, [train_len, test_len])
-    trainset = torch.utils.data.DataLoader(dataset=trainset, batch_size=batch_size,
+    trainset = torch.utils.data.DataLoader(dataset=trainset.to(device), batch_size=batch_size,
                                             num_workers=num_workers, pin_memory=False)
 
     for epoch in range(num_epochs):
@@ -101,9 +101,9 @@ def train_model(model, dataset, criterion, optimizer, decay, batch_size=128, num
         # Iterate over data.
         for i, item in enumerate(trainset):
             inputs, labels = item
-            if device is not None:
-                inputs = inputs.to(device)
-                labels = labels.to(device)
+            # if device is not None:
+            #     inputs = inputs.to(device)
+            #     labels = labels.to(device)
 
             # zero the parameter gradients
             optimizer.zero_grad()
