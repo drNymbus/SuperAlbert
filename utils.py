@@ -88,20 +88,21 @@ def train_model(model, dataset, criterion, optimizer, decay, batch_size=128, num
         # running_corrects = 0
 
         # Split train and test data
-        # train_len = int(len(dataset.dataset)*0.8)
-        # test_len = len(dataset.dataset) - train_len
-        # trainset, testset = torch.utils.data.random_split(dataset.dataset, [train_len, test_len])
+        train_len = int(len(dataset.dataset)*0.8)
+        test_len = len(dataset.dataset) - train_len
+        trainset, testset = torch.utils.data.random_split(dataset.dataset, [train_len, test_len])
 
         # x: torch.utils.data.DataLoader(image_datasets[x], batch_size=batch_size,
         #                             shuffle=True if x == 'train' else False,
         #                             num_workers=num_workers) for x in ['train', 'test']
-        trainset = dataset
-        # trainset = torch.utils.data.DataLoader(dataset=trainset, batch_size=batch_size, num_workers=num_workers)
-        # testset = torch.utils.data.DataLoader(dataset=testset, batch_size=batch_size, num_workers=num_workers)
+        # trainset = dataset
+        trainset = torch.utils.data.DataLoader(dataset=trainset, batch_size=batch_size, num_workers=num_workers, pin_memory=True)
+        testset = torch.utils.data.DataLoader(dataset=testset, batch_size=batch_size, num_workers=num_workers, pin_memory=True)
 
         # Iterate over data.
         for i, item in enumerate(trainset):
             inputs, labels = item
+            print(inputs.shape, labels.shape)
             if device is not None:
                 inputs = inputs.to(device)
                 labels = labels.to(device)
