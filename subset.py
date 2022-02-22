@@ -80,7 +80,7 @@ def subset(nb_classes, nb_images, folder='train', organ='flower', folder_src='/U
     for key in new_dict.keys():
         new_dict[key] = random.sample(dict_[key], nb_images)
         
-    print(new_dict)    
+    # print(new_dict)    
     
     if not os.path.exists(folder_dist+'new_train'):
         os.makedirs(folder_dist+'new_train')
@@ -93,8 +93,8 @@ def subset(nb_classes, nb_images, folder='train', organ='flower', folder_src='/U
     
     for key in new_dict.keys():
         fold = key.split('/')[1]
-        if not os.path.exists(folder_src+'new_train/{}'.format(fold)):
-            os.makedirs(folder_src+'new_train/{}'.format(fold))
+        if not os.path.exists(folder_dist+'new_train/{}'.format(fold)):
+            os.makedirs(folder_dist+'new_train/{}'.format(fold))
         
         for file in new_dict[key]:
             # print(file)
