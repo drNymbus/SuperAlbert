@@ -5,24 +5,18 @@ from torchvision import transforms
 from torchvision.datasets import ImageFolder
 import torchvision.models as models
 
-from collections import OrderedDict
+# from collections import OrderedDict
 
 # from resnet_model import create_pretrained_resnet
 
-def create_model(input_size, output_size):
+def create_model(output_size):
     # Loading pretrained model
-    model = torch.hub.load('NVIDIA/DeepLearningExamples:torchhub', 'nvidia_efficientnet_b7', pretrained=True)
+    model = models.efficientnet_b7(pretrained=True)
     # setting all parameters as constants
     for p in model.parameters():
         p.requires_grad = False
 
     # changing the last layer for a newly initialized trainable classifier
-    # model._fc = nn.Linear(model._fc.in_features, output_size)
     model.classifier[1] = nn.Linear(model.classifier[1].in_features, output_size)
-    # print(model)
 
     return model
-
-def load_model(input_size, output_size, filename):
-    model = create_model(input_size, output_size)
-    return model.load_state_dict(torch.load(filename))
