@@ -10,7 +10,7 @@ import torchvision.models as models
 import time
 import os
 
-def get_datasets(data_dir, input_size=224, batch_size=128, num_workers=16):
+def get_datasets(data_dir, input_size=224, batch_size=128, num_workers=16, device="cpu"):
     # input_size = 224
     # batch_size = 128
 
@@ -35,7 +35,7 @@ def get_datasets(data_dir, input_size=224, batch_size=128, num_workers=16):
 
     # Create training and validation dataloaders
     data_loaders = {
-        x: torch.utils.data.DataLoader(image_datasets[x]) for x in ['train', 'test']
+        x: torch.utils.data.DataLoader(image_datasets[x].to(device)) for x in ['train', 'test']
     }
 
     idx_to_class = {v: k for k, v in image_datasets['train'].class_to_idx.items()}
