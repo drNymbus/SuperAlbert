@@ -1,11 +1,3 @@
-# from sklearn.metrics import f1_score, top_k_accuracy_score
-
-# import numpy as np
-# import math
-# import time
-# import os
-# import json
-
 import utils
 import collector
 import predict
@@ -14,10 +6,10 @@ from SuperAlbert.cce import CCE
 from SuperAlbert.model import *
 
 if __name__ == "__main__":
-    RESULTS_PATH = utils.create_model_dir("efficientnet_CCE_v4")
+    RESULTS_PATH = utils.create_model_dir("efficientnet_CCE_v1")
 
     # data loading
-    data_loaders, image_datasets, idx_to_class = collector.get_datasets("./data_testing/", batch_size=128, num_workers=4)
+    data_loaders, image_datasets, idx_to_class = collector.get_datasets("/home/data/challenge_2022_miashs/", batch_size=128, num_workers=16)
     trainset, testset = data_loaders["train"], data_loaders["test"]
     img_train, img_test = image_datasets["train"], image_datasets["test"]
 
@@ -30,14 +22,14 @@ if __name__ == "__main__":
     # define loss, optimizer and learning rate
     optimizer_ft = optim.SGD(model.classifier[1].parameters(), lr=0.01, momentum=0.9, weight_decay=1e-4)
     criterion = CCE(device=device)
-    learning_rate_decay = MultiStepLR(optimizer_ft, milestones=[30, 40], gamma=0.1)
+    learning_rate_decay = MultiStepLR(optimizer_ft, milestones=[7, 10], gamma=0.1)
 
     # Train and evaluate
-    model, history = utils.train_model(model, trainset, criterion, optimizer_ft, learning_rate_decay, num_epochs=1, device=device)
+    model, history = utils.train_model(model, trainset, criterion, optimizer_ft, learning_rate_decay, num_epochs=12, device=device)
 
     utils.save_model(model, RESULTS_PATH + "model.torch")
     utils.save_history(history, RESULTS_PATH + "hitory_log.json")
 
     # Generate Predictions
-    answers = predict.get_predictions(model, testset, img_test, idx_to_class, device=device)
-    predict.save_predictions(answers, RESULTS_PATH + "prediction.csv")
+    # answers = predict.get_predictions(model, testset, img_test, idx_to_class, device=device)
+    # predict.save_predictions(answers, RESULTS_PATH + "prediction.csv")
