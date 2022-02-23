@@ -1,3 +1,5 @@
+import timm
+
 import torch
 from torch import optim, nn
 from torch.optim.lr_scheduler import MultiStepLR
@@ -31,4 +33,8 @@ def create_model_b3(output_size):
     # changing the last layer for a newly initialized trainable classifier
     model.classifier[1] = nn.Linear(model.classifier[1].in_features, output_size)
 
+    return model
+
+def create_model_resnet(output_size):
+    model = timm.create_model('resnet50', pretrained=True, num_classes=output_size)
     return model
