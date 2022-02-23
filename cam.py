@@ -8,7 +8,6 @@ from torch.nn import functional as F
 from torch import topk
 
 from SuperAlbert.model import *
-from SuperAlbert.resnet_model import *
 import collector
 
 # https://github.com/zhoubolei/CAM/blob/master/pytorch_CAM.py
@@ -53,29 +52,29 @@ def load_synset_classes(file_path):
 
 def do_cam(image_path):
 
-    model_type = 'efficientnet' # 'resnet'
-    # get all the classes in a list
-    all_classes = ['0', '7']
-    # load_synset_classes('LOC_synset_mapping.txt')
-    # all_classes = ['tench', 'goldfish', 'great white shark', 'tiger shark', ... ]
-    
+    # model_type = 'efficientnet' # 'resnet'
+
     # read and visualize the image
     image = cv2.imread(image_path)
     orig_image = image.copy()
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     height, width, _ = image.shape
 
-    data_loaders, image_datasets, idx_to_class = collector.get_datasets("C:/Users/alexa/OneDrive/Documents/Scolarité/M2/challenge_deeplearning/data", batch_size=128, num_workers=8)
+    data_loaders, image_datasets, idx_to_class = collector.get_datasets("/home/data/challenge_2022_miashs/data/train", batch_size=128, num_workers=16)
+
+    # get all the classes in a list
+    all_classes = list(idx_to_class.values())
+    # all_classes = ['tench', 'goldfish', 'great white shark', 'tiger shark', ... ]
     
     # load the model
     # model = models.resnet18(pretrained=True).eval()
-    if model_type == 'resnet':
-        model = create_pretrained_resnet(len(all_classes)).eval()
+    #if model_type == 'resnet':
+    #    model = create_pretrained_resnet(len(all_classes)).eval()
 
     # EfficientNet
-    if model_type == 'efficientnet':
-        model = create_model(None, len(idx_to_class)).eval()
-        #model.load_state_dict(torch.load('model_efficient_cce.torch'))
+    #if model_type == 'efficientnet':
+    model = create_model(len(idx_to_class)).eval()
+    model.load_state_dict(torch.load('results/efficientnet_CCE_v1/model.torch'))
     
     # hook the feature extractor
     # https://github.com/zhoubolei/CAM/blob/master/pytorch_CAM.py
@@ -85,12 +84,12 @@ def do_cam(image_path):
     
     #print(model)
     #Resnet 
-    if model_type == 'resnet':
-        model._modules.get("layer4").register_forward_hook(hook_feature)
+    #if model_type == 'resnet':
+    #    model._modules.get("layer4").register_forward_hook(hook_feature)
     
     #EfficientNet 
-    if model_type == 'efficientnet':
-        model._modules.get("features").register_forward_hook(hook_feature)
+    #if model_type == 'efficientnet':
+    model._modules.get("features").register_forward_hook(hook_feature)
     
     # get the softmax weight
     params = list(model.parameters())
@@ -129,7 +128,7 @@ def do_cam(image_path):
 
 if __name__ == "__main__":
  
-    directory = 'data_test'
+    directory = '/home/data/challenge_2022_miashs/data/train/1698065'
     # folder with 20 images : '1698065'
 
     for filename in os.listdir(directory):
