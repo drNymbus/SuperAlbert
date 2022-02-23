@@ -55,7 +55,8 @@ def get_datasets(data_dir, input_size=224, batch_size=128, num_workers=16, devic
 
     # Create training and validation dataloaders
     data_loaders = {
-        x: torch.utils.data.DataLoader(image_datasets[x], batch_size=batch_size, num_workers=num_workers) for x in ['train', 'test']
+        "train": torch.utils.data.DataLoader(image_datasets["train"]),
+        "test": torch.utils.data.DataLoader(image_datasets["test"], batch_size=batch_size, num_workers=num_workers)
     }
 
     idx_to_class = {v: k for k, v in image_datasets['train'].class_to_idx.items()}
