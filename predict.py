@@ -27,7 +27,7 @@ def get_predictions(model, dataset, img_set, idx_to_class, device=None):
             for a in prediction:
                 predicted_class = a.cpu().numpy()
                 s = img_set.imgs[idx][0]
-                answers.append((os.path.basename(os.path.splitext(s)[0]), idx_to_class[int(predicted_class)], outputs.numpy()))
+                answers.append((os.path.basename(os.path.splitext(s)[0]), idx_to_class[int(predicted_class)], outputs.cpu().numpy()))
                 idx += 1
 
     return answers

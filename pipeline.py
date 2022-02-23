@@ -32,7 +32,7 @@ if __name__ == "__main__":
     # Train and evaluate
     #print(device)
     history_path = RESULTS_PATH + "history.csv"
-    model, history = utils.train_model(model, trainset, criterion, optimizer_ft, learning_rate_decay, batch_size=BATCH_SIZE, num_epochs=12, device=device)
+    model, history = utils.train_model(model, trainset, criterion, optimizer_ft, learning_rate_decay, batch_size=BATCH_SIZE, num_epochs=12, device=device, history=history_path)
 
     utils.save_model(model, RESULTS_PATH + "model.torch")
     utils.save_history(history, RESULTS_PATH + "hitory_log.json")
