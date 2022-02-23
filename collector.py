@@ -37,7 +37,7 @@ def get_datasets(data_dir, input_size=224, batch_size=128, num_workers=16, devic
     data_loaders = {
         x: torch.utils.data.DataLoader(image_datasets[x]) for x in ['train', 'test']
     }
-
+    print("Data loaded")
     # APPLY NORMALIZATION (CENTER & REDUCED)
     mean, std = normalization_parameter(data_loaders["train"])
     data_transforms = {
@@ -61,8 +61,9 @@ def get_datasets(data_dir, input_size=224, batch_size=128, num_workers=16, devic
 
     # Create training and validation dataloaders
     data_loaders = {
-        x: torch.utils.data.DataLoader(image_datasets[x]) for x in ['train', 'test']
+        x: torch.utils.data.DataLoader(image_datasets[x], shuffle=True) for x in ['train', 'test']
     }
+    print("Data normalized")
 
     # APPLY NORMALIZATION (CENTER & REDUCED)
     # mean, std = normalization_parameter(data_loaders["train"])
