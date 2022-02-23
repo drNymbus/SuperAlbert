@@ -19,8 +19,10 @@ class CCE(nn.Module):
         Yg = yHat.gather(dim=1, index=torch.unsqueeze(y, 1))
         Px = yHat / (1 - Yg) + 1e-7
         Px_log = torch.log(Px + 1e-10)
+        # y_zerohot = torch.ones(batch_size, yHat.shape[1]).scatter_(
+        #     1, y.view(batch_size, 1).data.cpu(), 0)
         y_zerohot = torch.ones(batch_size, yHat.shape[1]).scatter_(
-            1, y.view(batch_size, 1).data.cpu(), 0)
+            1, y.view(batch_size, 1).data, 0)
         output = Px * Px_log * y_zerohot.to(device=self.device)
         complement_entropy = torch.sum(output) / (float(batch_size) * float(yHat.shape[1]))
 
