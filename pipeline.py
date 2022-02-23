@@ -1,3 +1,6 @@
+import torch
+import torch.nn as nn
+
 import time
 
 import utils
@@ -15,6 +18,8 @@ if __name__ == "__main__":
     BATCH_SIZE = 128
     NUM_WORKERS = 16
 
+    SSOUT = True
+
     device = utils.get_device()
     #print(device)
 
@@ -31,7 +36,8 @@ if __name__ == "__main__":
 
     # Define loss, optimizer and learning rate
     optimizer_ft = optim.SGD(model.classifier[1].parameters(), lr=0.01, momentum=0.9, weight_decay=1e-4)
-    criterion = CCE(device=device)
+    # criterion = CCE(device=device)
+    criterion = nn.CrossEntropyLoss()
     learning_rate_decay = MultiStepLR(optimizer_ft, milestones=[10, 12], gamma=0.1)
 
     # Train and evaluate
