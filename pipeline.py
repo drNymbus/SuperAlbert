@@ -19,6 +19,8 @@ if __name__ == "__main__":
     since = time.time()
     RESULTS_PATH = utils.create_model_dir("{}_{}".format(datetime.datetime.now(), suffix))
 
+    NB_CLASS = 1081
+
     EPOCHS = 30
     BATCH_SIZE = 64
     NUM_WORKERS = 16
@@ -29,26 +31,29 @@ if __name__ == "__main__":
     #print(device)
 
     # Data loading
-    # data_loaders, image_datasets, idx_to_class = collector.get_datasets("../data_testing/", batch_size=BATCH_SIZE, num_workers=NUM_WORKERS, device=device)
-    data_loaders, image_datasets, idx_to_class = collector.get_datasets("/home/data/challenge_2022_miashs/",
-                                                                        batch_size=BATCH_SIZE, num_workers=NUM_WORKERS, device=device)
-    trainset, testset = data_loaders["train"], data_loaders["test"]
-    img_train, img_test = image_datasets["train"], image_datasets["test"]
+    trainset, train_img = collector.get_data_loader("../data_testing/", batch_size=BATCH_SIZE, num_workers=NUM_WORKERS)
+    # trainset, train_img = collector.get_data_loader("/home/data/challenge_2022_miashs/", batch_size=BATCH_SIZE, num_workers=NUM_WORKERS)
+    # trainset, testset = data_loaders["train"], data_loaders["test"]
+    # img_train, img_test = image_datasets["train"], image_datasets["test"]
 
     # Init model
-    model = create_model_resnet(len(idx_to_class))
+    model = create_model_resnet(NB_CLASS)
     model = model.to(device)
 
     # Define loss, optimizer and learning rate
     optimizer_ft = create_optimizer(model, 'sgd', learning_rate=0.001, momentum=0.9, weight_decay=1e-4)
     # optimizer_ft = optim.SGD(model.classifier[1].parameters(), lr=0.01, momentum=0.9, weight_decay=1e-4)
-    # criterion = CCE(device=device)
-    criterion = nn.CrossEntropyLoss()
+    criterion = CCE(device=device)
+    # criterion = nn.CrossEntropyLoss()
     learning_rate_decay = MultiStepLR(optimizer_ft, milestones=[22, 27], gamma=0.1)
 
     # Train and evaluate
     history_path = RESULTS_PATH + "history.csv"
-    model, history = utils.train_model(model, trainset, criterion, optimizer_ft, learning_rate_decay, batch_size=BATCH_SIZE, num_epochs=EPOCHS, num_workers=NUM_WORKERS, device=device, history=history_path, ssout=SSOUT)
+    model, history = utils.train_model(model, trainset,
+                                       criterion, optimizer_ft, learning_rate_decay,
+                                       batch_size=BATCH_SIZE, num_epochs=EPOCHS,
+                                       num_workers=NUM_WORKERS, device=device, history=history_path,
+                                       ssout=SSOUT)
 
     utils.save_model(model, RESULTS_PATH + "model.torch")
     print("Model saved ...")
@@ -56,9 +61,12 @@ if __name__ == "__main__":
 
 
     # Generate Predictions
-    answers = predict.get_predictions(model, testset, img_test, idx_to_class, device=device, ssout=SSOUT)
-    print("Predictions done ...")
-    predict.save_predictions(answers, RESULTS_PATH + "prediction.csv")
+    testset, test_img = collector.get_data_loader("../data_testing/", batch_size=BATCH_SIZE, num_workers=NUM_WORKERS)
+    # testset, test_img, _ = collector.get_data_loader("/home/data/challenge_2022_miashs/", batch_size=BATCH_SIZE, num_workers=NUM_WORKERS)
+
+    # answers = predict.get_predictions(model, testset, test_img, idx_to_class, device=device, ssout=SSOUT)
+    # print("Predictions done ...")
+    # predict.save_predictions(answers, RESULTS_PATH + "prediction.csv")
 
     time_elapsed = time.time() - since
     print("Pipeline terminated after {}m {}s".format(time_elapsed//60, time_elapsed%60))

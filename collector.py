@@ -28,7 +28,7 @@ import os
 #     std /= nb_samples
 #     return mean.numpy(),std.numpy()
 
-def get_datasets(data_dir, input_size=224, batch_size=128, num_workers=16, device="cpu"):
+def get_datasets(data_dir, input_size=224, batch_size=128, num_workers=16):
     # input_size = 224
     # batch_size = 128
 
@@ -66,13 +66,14 @@ def get_datasets(data_dir, input_size=224, batch_size=128, num_workers=16, devic
 
     return data_loaders, image_datasets, idx_to_class
 
-def get_data_loader(dir, batch_size=128, num_workers=16):
-    dataset = ImageDataset('/home/data/challenge_2022_miashs/train', 
-                       transform=create_transform(224, is_training=True))
-    loader = torch.utils.data.DataLoader(dataset, batch_size=100, shuffle=True, num_workers=16)
-    idx_to_class = {v: k for k, v in image_datasets['train'].class_to_idx.items()}
+def get_data_loader(dir, input_size=224, batch_size=128, num_workers=16, device="cpu"):
+    dataset = ImageDataset(dir, 
+                       transform=create_transform(input_size, is_training=True))
+    loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=num_workers)
 
-    return loader, dataset, idx_to_class
+    # idx_to_class = {v: k for k, v in dataset.class_to_idx.items()}
+
+    return loader, dataset#, idx_to_class
 
 
 if __name__ == "__main__":
