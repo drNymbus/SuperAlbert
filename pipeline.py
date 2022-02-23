@@ -40,7 +40,7 @@ if __name__ == "__main__":
     model = model.to(device)
 
     # Define loss, optimizer and learning rate
-    optimizer = create_optimizer(model, 'sgd', learning_rate=0.01, momentum=0.9, weight_decay=1e-4)
+    optimizer_ft = create_optimizer(model, 'sgd', learning_rate=0.01, momentum=0.9, weight_decay=1e-4)
     # optimizer_ft = optim.SGD(model.classifier[1].parameters(), lr=0.01, momentum=0.9, weight_decay=1e-4)
     # criterion = CCE(device=device)
     criterion = nn.CrossEntropyLoss()
