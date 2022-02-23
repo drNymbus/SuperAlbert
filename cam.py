@@ -60,7 +60,7 @@ def do_cam(image_path):
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     height, width, _ = image.shape
 
-    data_loaders, image_datasets, idx_to_class = collector.get_datasets("/home/data/challenge_2022_miashs/train", batch_size=128, num_workers=16)
+    data_loaders, image_datasets, idx_to_class = collector.get_datasets("/home/data/challenge_2022_miashs", batch_size=128, num_workers=16)
 
     # get all the classes in a list
     all_classes = list(idx_to_class.values())
