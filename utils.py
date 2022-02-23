@@ -44,7 +44,7 @@ def load_model(model, filename):
 ##################  TRAINING  ###########################
 #########################################################
 
-def test_model(model, dataset, device=None):
+def test_model(model, dataset, device=None, ssout=False):
     model.eval()
 
     predictions = []
@@ -72,6 +72,11 @@ def test_model(model, dataset, device=None):
                 predictions_score.append(list(outputs.cpu().numpy()[i]))
                 y_true.append(labels.cpu().numpy()[i])
 
+            if (i%100) == 1 and ssout:
+                print("({}/{}) Testing ...".format(i+1, len(dataset)), end="\r")
+    
+    print()
+
     score = {
         "f_weighted": -1,
         "f_macro": -1,
@@ -88,7 +93,7 @@ def test_model(model, dataset, device=None):
 
     return score
 
-def train_model(model, dataset, criterion, optimizer, decay, batch_size=128, num_epochs=5, num_workers=16, device="cpu", history="results/log.txt"):
+def train_model(model, dataset, criterion, optimizer, decay, batch_size=128, num_epochs=5, num_workers=16, device="cpu", history="results/log.txt", ssout=False):
     since = time.time()
     # history = {}
 
@@ -138,17 +143,18 @@ def train_model(model, dataset, criterion, optimizer, decay, batch_size=128, num
 
             # statistics
             running_loss += loss.item() * inputs.size(0)
-            # if (i%100) == 1:
-            print("({}/{})Batch loss: {}".format(i+1, len(trainset), loss.item()))
+            if (i%100) == 1 and ssout:
+                print("({}/{})Batch loss: {}".format(i+1, len(trainset), loss.item()), end="\r")
             # running_corrects += torch.sum(preds == labels.data)
 
+        print()
         # Compute Loss
         epoch_loss = running_loss / len(dataset.dataset)
-        print('{} Loss: {:.4f}'.format(epoch, epoch_loss))
+        print('Loss: {:.4f}'.format(epoch_loss))
 
         # Evaluate model
-        score = test_model(model, testset, device=device)
-        print('{} Score: '.format(epoch))
+        score = test_model(model, testset, device=device, ssout=ssout)
+        print('Score: ')
         print('\tf_measure(weighted)={}\n\tf_measure(macro)={}\n\ttop_k={}'.format(score["f_weighted"], score["f_macro"], score["top_k"]))
 
         decay.step()

@@ -1,3 +1,5 @@
+import time
+
 import utils
 import collector
 import predict
@@ -6,6 +8,7 @@ from SuperAlbert.cce import CCE
 from SuperAlbert.model import *
 
 if __name__ == "__main__":
+    since = time.time()
     RESULTS_PATH = utils.create_model_dir("efficientnet_b4_CCE_v2")
 
     EPOCHS = 1
@@ -33,11 +36,17 @@ if __name__ == "__main__":
 
     # Train and evaluate
     history_path = RESULTS_PATH + "history.csv"
-    model, history = utils.train_model(model, trainset, criterion, optimizer_ft, learning_rate_decay, batch_size=BATCH_SIZE, num_epochs=EPOCHS, num_workers=NUM_WORKERS, device=device, history=history_path)
+    model, history = utils.train_model(model, trainset, criterion, optimizer_ft, learning_rate_decay, batch_size=BATCH_SIZE, num_epochs=EPOCHS, num_workers=NUM_WORKERS, device=device, history=history_path, ssout=True)
 
     utils.save_model(model, RESULTS_PATH + "model.torch")
+    print("Model saved ...")
     # utils.save_history(history, RESULTS_PATH + "hitory_log.json")
 
+
     # Generate Predictions
-    answers = predict.get_predictions(model, testset, img_test, idx_to_class, device=device)
+    answers = predict.get_predictions(model, testset, img_test, idx_to_class, device=device, ssout=True)
+    print("Predictions done ...")
     predict.save_predictions(answers, RESULTS_PATH + "prediction.csv")
+
+    time_elapsed = time.time() - since
+    print("Pipeline terminated after {}m {}s".format(time_elapsed//60, time_elapsed%60))

@@ -4,7 +4,7 @@ from SuperAlbert.model import *
 import utils
 import pandas as pd
 
-def get_predictions(model, dataset, img_set, idx_to_class, device=None):
+def get_predictions(model, dataset, img_set, idx_to_class, device=None, ssout=False):
     model.eval()
 
     answers = []
@@ -31,6 +31,10 @@ def get_predictions(model, dataset, img_set, idx_to_class, device=None):
                 answers.append((os.path.basename(os.path.splitext(s)[0]), int(idx_to_class[int(predicted_class)]), list(outputs.cpu().numpy()[i])))
                 idx += 1
 
+        if (i%100 == 1) and ssout:
+            print("({}/{}) Prediction ...".format(i+1, len(dataset)), end="\r")
+
+    print()
     return answers
 
 def save_predictions(answers, filename):
