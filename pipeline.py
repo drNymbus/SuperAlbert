@@ -4,6 +4,7 @@ import torch.nn as nn
 import timm
 from timm.optim import create_optimizer_v2 as create_optimizer
 
+import warnings
 import time
 import datetime
 
@@ -15,6 +16,9 @@ from SuperAlbert.cce import CCE
 from SuperAlbert.model import *
 
 if __name__ == "__main__":
+    warnings.filterwarnings('ignore', '.*interpolation.*', )
+    # chillout timm
+
     suffix = "resnet_CE_1"
     since = time.time()
     RESULTS_PATH = utils.create_model_dir("{}_{}".format(datetime.datetime.now(), suffix))
@@ -31,8 +35,8 @@ if __name__ == "__main__":
     #print(device)
 
     # Data loading
-    trainset, train_img = collector.get_data_loader("../data_testing/", batch_size=BATCH_SIZE, num_workers=NUM_WORKERS)
-    # trainset, train_img = collector.get_data_loader("/home/data/challenge_2022_miashs/", batch_size=BATCH_SIZE, num_workers=NUM_WORKERS)
+    # trainset, train_img = collector.get_data_loader("../data_testing/", batch_size=BATCH_SIZE, num_workers=NUM_WORKERS)
+    trainset, train_img = collector.get_data_loader("/home/data/challenge_2022_miashs/", batch_size=BATCH_SIZE, num_workers=NUM_WORKERS)
     # trainset, testset = data_loaders["train"], data_loaders["test"]
     # img_train, img_test = image_datasets["train"], image_datasets["test"]
 
@@ -61,8 +65,8 @@ if __name__ == "__main__":
 
 
     # Generate Predictions
-    testset, test_img = collector.get_data_loader("../data_testing/", batch_size=BATCH_SIZE, num_workers=NUM_WORKERS)
-    # testset, test_img, _ = collector.get_data_loader("/home/data/challenge_2022_miashs/", batch_size=BATCH_SIZE, num_workers=NUM_WORKERS)
+    # testset, test_img = collector.get_data_loader("../data_testing/", batch_size=BATCH_SIZE, num_workers=NUM_WORKERS)
+    testset, test_img, _ = collector.get_data_loader("/home/data/challenge_2022_miashs/", batch_size=BATCH_SIZE, num_workers=NUM_WORKERS)
 
     # answers = predict.get_predictions(model, testset, test_img, idx_to_class, device=device, ssout=SSOUT)
     # print("Predictions done ...")
