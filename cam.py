@@ -26,7 +26,7 @@ def returnCAM(feature_conv, weight_softmax, class_idx):
     return output_cam
 
 
-def show_cam(CAMs, width, height, orig_image, class_idx, all_classes, save_name):
+def show_cam(CAMs, width, height, orig_image, class_idx, all_classes, save_name, folder_path):
     for i, cam in enumerate(CAMs):
         heatmap = cv2.applyColorMap(cv2.resize(cam,(width, height)), cv2.COLORMAP_JET)
         result = heatmap * 0.3 + orig_image * 0.5
@@ -35,7 +35,7 @@ def show_cam(CAMs, width, height, orig_image, class_idx, all_classes, save_name)
                     cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 255, 0), 2)
         # cv2.imshow('CAM', result/255.)
         # cv2.waitKey(0)
-        cv2.imwrite(f"CAM_outputs/CAM_{save_name}.jpg", result)
+        cv2.imwrite(f"CAM_outputs/CAM_{folder_path}_{save_name}.jpg", result)
 
 
 def load_synset_classes(file_path):
@@ -60,7 +60,7 @@ def do_cam(image_path):
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     height, width, _ = image.shape
 
-    data_loaders, image_datasets, idx_to_class = collector.get_datasets("/home/data/challenge_2022_miashs/data/train", batch_size=128, num_workers=16)
+    data_loaders, image_datasets, idx_to_class = collector.get_datasets("/home/data/challenge_2022_miashs/train", batch_size=128, num_workers=16)
 
     # get all the classes in a list
     all_classes = list(idx_to_class.values())
@@ -73,8 +73,8 @@ def do_cam(image_path):
 
     # EfficientNet
     #if model_type == 'efficientnet':
-    model = create_model(len(idx_to_class)).eval()
-    model.load_state_dict(torch.load('results/efficientnet_CCE_v1/model.torch'))
+    model = create_model_b3(len(idx_to_class)).eval()
+    model.load_state_dict(torch.load('results/efficientnet_b3_CCE_v1/model.torch'))
     
     # hook the feature extractor
     # https://github.com/zhoubolei/CAM/blob/master/pytorch_CAM.py
@@ -122,14 +122,15 @@ def do_cam(image_path):
     CAMs = returnCAM(features_blobs[0], weight_softmax, class_idx)
     # file name to save the resulting CAM image with
     save_name = f"{image_path.split('/')[-1].split('.')[0]}"
+    folder_path = image_path.split('/')[-2]
     # show and save the results
-    show_cam(CAMs, width, height, orig_image, class_idx, all_classes, save_name)
+    show_cam(CAMs, width, height, orig_image, class_idx, all_classes, save_name, folder_path)
 
 
 if __name__ == "__main__":
  
-    directory = '/home/data/challenge_2022_miashs/data/train/1698065'
-    # folder with 20 images : '1698065'
+    directory = '/home/data/challenge_2022_miashs/train/1365961'
+    # folder with 20 images : '1698065', '1365961'
 
     for filename in os.listdir(directory):
         if filename.endswith(".jpg"):
