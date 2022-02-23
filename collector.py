@@ -65,7 +65,7 @@ def get_datasets(data_dir, input_size=224, batch_size=128, num_workers=16, devic
     }
 
     # APPLY NORMALIZATION (CENTER & REDUCED)
-    mean, std = normalization_parameter(data_loaders["train"])
+    # mean, std = normalization_parameter(data_loaders["train"])
 
     # transformer = transforms.Compose([transforms.Normalize(mean, std)])
     # images_norm = { x : ImageFolder(image_datasets[x], transformer) for x in ["train", "test"] }
