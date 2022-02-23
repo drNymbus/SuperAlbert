@@ -29,58 +29,42 @@ def get_datasets(data_dir, input_size=224, batch_size=128, num_workers=16, devic
     # input_size = 224
     # batch_size = 128
 
+    # [0.437567756 0.467602645 0.310925535]
+    mean = [0.437567756, 0.467602645,  0.310925535]
+    # [0.185571362 0.161665897 0.174258414]
+    std  = [0.185571362, 0.161665897, 0.174258414]
+
+    data_transforms = {
+        'train': transforms.Compose([
+            transforms.RandomResizedCrop(input_size),
+            transforms.RandomHorizontalFlip(),
+            transforms.ToTensor(),
+            transforms.Normalize(mean, std)
+        ]),
+        'test': transforms.Compose([
+            transforms.Resize(input_size),
+            transforms.CenterCrop(input_size),
+            transforms.ToTensor(),
+            transforms.Normalize(mean, std)
+        ])
+    }
+
     image_datasets = {
-        x: ImageFolder(os.path.join(data_dir, x), transforms.Compose([transforms.ToTensor()])) for x in ['train', 'test']
+        x: ImageFolder(os.path.join(data_dir, x), data_transforms[x]) for x in ['train', 'test']
     }
 
     # Create training and validation dataloaders
     data_loaders = {
         x: torch.utils.data.DataLoader(image_datasets[x]) for x in ['train', 'test']
     }
-    print("Data loaded")
-    # APPLY NORMALIZATION (CENTER & REDUCED)
-    # mean, std = normalization_parameter(data_loaders["train"])
-    # data_transforms = {
-    #     'train': transforms.Compose([
-    #         transforms.RandomResizedCrop(input_size),
-    #         transforms.RandomHorizontalFlip(),
-    #         transforms.ToTensor(),
-    #         transforms.Normalize(mean, std)
-    #     ]),
-    #     'test': transforms.Compose([
-    #         transforms.Resize(input_size),
-    #         transforms.CenterCrop(input_size),
-    #         transforms.ToTensor(),
-    #         transforms.Normalize(mean, std)
-    #     ])
-    # }
-
-    # image_datasets = {
-    #     x: ImageFolder(os.path.join(data_dir, x), data_transforms[x]) for x in ['train', 'test']
-    # }
-
-    # # Create training and validation dataloaders
-    # data_loaders = {
-    #     x: torch.utils.data.DataLoader(image_datasets[x], shuffle=True) for x in ['train', 'test']
-    # }
-    print("Data normalized")
-
-    # APPLY NORMALIZATION (CENTER & REDUCED)
-    # mean, std = normalization_parameter(data_loaders["train"])
-
-    # transformer = transforms.Compose([transforms.Normalize(mean, std)])
-    # images_norm = { x : ImageFolder(image_datasets[x], transformer) for x in ["train", "test"] }
-    # data_loaders = {
-    #     x : torch.utils.data.DataLoader(images_norm[x]) for x in ["train", "test"]
-    # }
 
     idx_to_class = {v: k for k, v in image_datasets['train'].class_to_idx.items()}
 
     return data_loaders, image_datasets, idx_to_class
 
 if __name__ == "__main__":
-    # data_loaders, image_datasets, idx_to_class = get_datasets("../data_testing/", batch_size=128)
-    data_loaders, image_datasets, idx_to_class = get_datasets("/home/data/challenge_2022_miashs/", batch_size=128)
+    data_loaders, image_datasets, idx_to_class = get_datasets("../data/", batch_size=128)
+    # data_loaders, image_datasets, idx_to_class = get_datasets("/home/data/challenge_2022_miashs/", batch_size=128)
     # labels_dist = {}
     # for inputs, labels in train:
     #     # print(inputs.shape, idx_to_class[labels])

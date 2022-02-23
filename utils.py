@@ -2,9 +2,10 @@ import math
 import time
 import os
 import json
-import numpy as np
-import torch
 
+import numpy as np
+
+import torch
 from torch import optim, nn
 from torch.optim.lr_scheduler import MultiStepLR
 
@@ -13,6 +14,8 @@ from torchvision.datasets import ImageFolder
 import torchvision.models as models
 
 from sklearn.metrics import f1_score, top_k_accuracy_score
+
+import collector
 
 def create_model_dir(name):
     if not os.path.isdir("results/" + name):
@@ -94,15 +97,17 @@ def train_model(model, dataset, criterion, optimizer, decay, batch_size=128, num
 
 
     # Split train and test data
-    train_len = int(len(dataset.dataset)*0.8)
+    train_len = int(len(dataset.dataset)*0.9)
     test_len = len(dataset.dataset) - train_len
     trainset, testset = torch.utils.data.random_split(dataset.dataset, [train_len, test_len])
     # trainset = trainset.to(device)
-    trainset = torch.utils.data.DataLoader(dataset=trainset, batch_size=batch_size,
+    trainset = torch.utils.data.DataLoader(dataset=trainset, batch_size=batch_size, shuffle=True,
                                             num_workers=num_workers, pin_memory=False)
-    testset = torch.utils.data.DataLoader(dataset=testset, batch_size=batch_size,
+    testset = torch.utils.data.DataLoader(dataset=testset, batch_size=batch_size, shuffle=True,
                                             num_workers=num_workers, pin_memory=False)
-    
+
+    # mean, std = collector.normalization_parameter(testset)
+    # print("mean={}, std={}".format(mean, std))
 
     for epoch in range(num_epochs):
         print('Epoch {}/{}'.format(epoch+1, num_epochs))
