@@ -61,10 +61,10 @@ def test_model(model, dataset, device=None):
             #   but in testing we only consider the final output.
             outputs = model(inputs)
 
-            predictions.append(outputs.argmax(dim=1).item())
+            predictions.append(outputs.argmax(dim=1).cpu().numpy()[0])
             predictions_score.append(list(outputs.cpu().numpy()[0]))
 
-            y_true.append(labels.item())
+            y_true.append(labels.cpu().numpy()[0])
 
     f_score_weighted = f1_score(y_true, predictions, average="weighted")
     f_score_macro = f1_score(y_true, predictions, average="macro")
@@ -157,9 +157,9 @@ def train_model(model, dataset, criterion, optimizer, decay, batch_size=128, num
 ###############  MODEL VISUALISATOR  ####################
 #########################################################
 
-def save_history(history, filename):
-    with open(filename, "w+") as f:
-        json.dump(history, f)
+# def save_history(history, filename):
+#     with open(filename, "w+") as f:
+#         json.dump(history, f)
 
 def view_history(filename):
     pass

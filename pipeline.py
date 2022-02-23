@@ -6,16 +6,17 @@ from SuperAlbert.cce import CCE
 from SuperAlbert.model import *
 
 if __name__ == "__main__":
-    RESULTS_PATH = utils.create_model_dir("efficientnet_CCE_v1")
+    RESULTS_PATH = utils.create_model_dir("efficientnet_CCE_v503")
     BATCH_SIZE = 128
+    NUM_WORKERS = 4
 
     device = utils.get_device()
     #print(device)
 
     # data loading
-    # data_loaders, image_datasets, idx_to_class = collector.get_datasets("../data/", batch_size=BATCH_SIZE, num_workers=4)
+    # data_loaders, image_datasets, idx_to_class = collector.get_datasets("../data_testing/", batch_size=BATCH_SIZE, num_workers=NUM_WORKERS, device=device)
     data_loaders, image_datasets, idx_to_class = collector.get_datasets("/home/data/challenge_2022_miashs/",
-                                                                        batch_size=BATCH_SIZE, num_workers=16, device=device)
+                                                                        batch_size=BATCH_SIZE, num_workers=NUM_WORKERS, device=device)
     trainset, testset = data_loaders["train"], data_loaders["test"]
     img_train, img_test = image_datasets["train"], image_datasets["test"]
 
@@ -32,10 +33,10 @@ if __name__ == "__main__":
     # Train and evaluate
     #print(device)
     history_path = RESULTS_PATH + "history.csv"
-    model, history = utils.train_model(model, trainset, criterion, optimizer_ft, learning_rate_decay, batch_size=BATCH_SIZE, num_epochs=12, device=device, history=history_path)
+    model, history = utils.train_model(model, trainset, criterion, optimizer_ft, learning_rate_decay, batch_size=BATCH_SIZE, num_epochs=1, num_workers=NUM_WORKERS, device=device, history=history_path)
 
     utils.save_model(model, RESULTS_PATH + "model.torch")
-    utils.save_history(history, RESULTS_PATH + "hitory_log.json")
+    # utils.save_history(history, RESULTS_PATH + "hitory_log.json")
 
     # Generate Predictions
     answers = predict.get_predictions(model, testset, img_test, idx_to_class, device=device)
