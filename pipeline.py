@@ -8,7 +8,7 @@ from SuperAlbert.model import *
 if __name__ == "__main__":
     RESULTS_PATH = utils.create_model_dir("efficientnet_CCE_v503")
     BATCH_SIZE = 128
-    NUM_WORKERS = 4
+    NUM_WORKERS = 16
 
     device = utils.get_device()
     #print(device)
