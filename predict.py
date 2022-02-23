@@ -22,7 +22,6 @@ def get_predictions(model, dataset, img_set, idx_to_class, device=None, ssout=Fa
             # Special case for inception because in training it has an auxiliary output. In train
             #   mode we calculate the loss by summing the final output and the auxiliary output
             #   but in testing we only consider the final output.
-
             outputs = model(inputs)
             prediction = outputs.argmax(dim=1)
             for i, a in enumerate(prediction):
