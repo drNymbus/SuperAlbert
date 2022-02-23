@@ -48,7 +48,8 @@ def test_model(model, dataset, device=None):
     predictions_score = []
     y_true = []
 
-    for inputs, labels in dataset:
+    for _, item in enumerate(dataset):
+        inputs, labels = item
         if device is not None:
             inputs = inputs.to(device)
             labels = labels.to(device)
@@ -61,21 +62,28 @@ def test_model(model, dataset, device=None):
             #   mode we calculate the loss by summing the final output and the auxiliary output
             #   but in testing we only consider the final output.
             outputs = model(inputs)
+            outputs_argmax = outputs.argmax(dim=1)
+            # print(inputs.shape, outputs.shape)
+            for i in range(inputs.shape[0]):
+                predictions.append(outputs_argmax.cpu().numpy()[i]) #outputs.argmax(dim=1).cpu().numpy()[0]
+                predictions_score.append(list(outputs.cpu().numpy()[i]))
+                y_true.append(labels.cpu().numpy()[i])
 
-            predictions.append(outputs.argmax(dim=1).cpu().numpy()[0])
-            predictions_score.append(list(outputs.cpu().numpy()[0]))
-
-            y_true.append(labels.cpu().numpy()[0])
-
-    f_score_weighted = f1_score(y_true, predictions, average="weighted")
-    f_score_macro = f1_score(y_true, predictions, average="macro")
-    #top_k_score = top_k_accuracy_score(y_true, predictions_score)
-
-    return {
-        'f_weighted': f_score_weighted,
-        'f_macro' : f_score_macro,
-        'top_k': -1#top_k_score
+    score = {
+        "f_weighted": -1,
+        "f_macro": -1,
+        "top_k": -1
     }
+
+    try:
+        score["f_weighted"] = f1_score(y_true, predictions, average="weighted")
+        score["f_macro"] = f1_score(y_true, predictions, average="macro")
+        score["top_k"] = top_k_accuracy_score(y_true, predictions_score)
+    except Exception as e:
+        print("Error compute scoring")
+        print(str(e))
+
+    return score
 
 def train_model(model, dataset, criterion, optimizer, decay, batch_size=128, num_epochs=5, num_workers=16, device="cpu", history="results/log.txt"):
     since = time.time()
@@ -91,6 +99,8 @@ def train_model(model, dataset, criterion, optimizer, decay, batch_size=128, num
     trainset, testset = torch.utils.data.random_split(dataset.dataset, [train_len, test_len])
     # trainset = trainset.to(device)
     trainset = torch.utils.data.DataLoader(dataset=trainset, batch_size=batch_size,
+                                            num_workers=num_workers, pin_memory=False)
+    testset = torch.utils.data.DataLoader(dataset=testset, batch_size=batch_size,
                                             num_workers=num_workers, pin_memory=False)
     
 
@@ -132,18 +142,12 @@ def train_model(model, dataset, criterion, optimizer, decay, batch_size=128, num
         print('{} Loss: {:.4f}'.format(epoch, epoch_loss))
 
         # Evaluate model
-        testset = torch.utils.data.DataLoader(dataset=testset, batch_size=batch_size,
-                                                num_workers=num_workers, pin_memory=False)
         score = test_model(model, testset, device=device)
         print('{} Score: '.format(epoch))
         print('\tf_measure(weighted)={}\n\tf_measure(macro)={}\n\ttop_k={}'.format(score["f_weighted"], score["f_macro"], score["top_k"]))
 
         decay.step()
 
-        # history[epoch] = {
-        #     "loss" : epoch_loss,
-        #     "score" : score
-        # }
         with open(history, 'a') as f:
             f.write(f"{epoch}, {epoch_loss}, {score}")
 

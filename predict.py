@@ -25,15 +25,15 @@ def get_predictions(model, dataset, img_set, idx_to_class, device=None):
 
             outputs = model(inputs)
             prediction = outputs.argmax(dim=1)
-            for a in prediction:
+            for i, a in enumerate(prediction):
                 predicted_class = a.cpu().numpy()
                 s = img_set.imgs[idx][0]
-                answers.append((os.path.basename(os.path.splitext(s)[0]), int(idx_to_class[int(predicted_class)], outputs.cpu().numpy()[0])))
+                answers.append((os.path.basename(os.path.splitext(s)[0]), int(idx_to_class[int(predicted_class)]), list(outputs.cpu().numpy()[i])))
                 idx += 1
 
     return answers
 
-def save_prediction(answers, filename):
+def save_predictions(answers, filename):
     # save predictions in filename (CSV file format)
     with open(filename, 'w') as f:
         f.write('Id,Category,Confidence\n')
