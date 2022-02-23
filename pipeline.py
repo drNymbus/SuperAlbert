@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 
 import time
+import datetime
 
 import utils
 import collector
@@ -11,10 +12,11 @@ from SuperAlbert.cce import CCE
 from SuperAlbert.model import *
 
 if __name__ == "__main__":
+    suffix = "resnet_CE_1"
     since = time.time()
-    RESULTS_PATH = utils.create_model_dir("efficientnet_b4_CCE_v2")
+    RESULTS_PATH = utils.create_model_dir("{}_{}".format(datetime.datetime.now(), suffix))
 
-    EPOCHS = 1
+    EPOCHS = 30
     BATCH_SIZE = 128
     NUM_WORKERS = 16
 
@@ -31,14 +33,14 @@ if __name__ == "__main__":
     img_train, img_test = image_datasets["train"], image_datasets["test"]
 
     # Init model
-    model = create_model_b3(len(idx_to_class))
+    model = create_model_resnet(len(idx_to_class))
     model = model.to(device)
 
     # Define loss, optimizer and learning rate
     optimizer_ft = optim.SGD(model.classifier[1].parameters(), lr=0.01, momentum=0.9, weight_decay=1e-4)
     # criterion = CCE(device=device)
     criterion = nn.CrossEntropyLoss()
-    learning_rate_decay = MultiStepLR(optimizer_ft, milestones=[10, 12], gamma=0.1)
+    learning_rate_decay = MultiStepLR(optimizer_ft, milestones=[30, 40], gamma=0.1)
 
     # Train and evaluate
     history_path = RESULTS_PATH + "history.csv"
