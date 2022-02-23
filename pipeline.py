@@ -42,7 +42,7 @@ if __name__ == "__main__":
 
     # Train and evaluate
     history_path = RESULTS_PATH + "history.csv"
-    model, history = utils.train_model(model, trainset, criterion, optimizer_ft, learning_rate_decay, batch_size=BATCH_SIZE, num_epochs=EPOCHS, num_workers=NUM_WORKERS, device=device, history=history_path, ssout=True)
+    model, history = utils.train_model(model, trainset, criterion, optimizer_ft, learning_rate_decay, batch_size=BATCH_SIZE, num_epochs=EPOCHS, num_workers=NUM_WORKERS, device=device, history=history_path, ssout=SSOUT)
 
     utils.save_model(model, RESULTS_PATH + "model.torch")
     print("Model saved ...")
@@ -50,7 +50,7 @@ if __name__ == "__main__":
 
 
     # Generate Predictions
-    answers = predict.get_predictions(model, testset, img_test, idx_to_class, device=device, ssout=True)
+    answers = predict.get_predictions(model, testset, img_test, idx_to_class, device=device, ssout=SSOUT)
     print("Predictions done ...")
     predict.save_predictions(answers, RESULTS_PATH + "prediction.csv")
 

@@ -31,7 +31,7 @@ def get_predictions(model, dataset, img_set, idx_to_class, device=None, ssout=Fa
                 answers.append((os.path.basename(os.path.splitext(s)[0]), int(idx_to_class[int(predicted_class)]), list(outputs.cpu().numpy()[i])))
                 idx += 1
 
-        if (i%100 == 1) and ssout:
+        if ssout:
             print("({}/{}) Prediction ...".format(i+1, len(dataset)), end="\r")
 
     print()

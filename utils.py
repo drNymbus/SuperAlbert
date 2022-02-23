@@ -72,7 +72,7 @@ def test_model(model, dataset, device=None, ssout=False):
                 predictions_score.append(list(outputs.cpu().numpy()[i]))
                 y_true.append(labels.cpu().numpy()[i])
 
-            if (i%100) == 1 and ssout:
+            if ssout:
                 print("({}/{}) Testing ...".format(i+1, len(dataset)), end="\r")
     
     print()
@@ -143,7 +143,7 @@ def train_model(model, dataset, criterion, optimizer, decay, batch_size=128, num
 
             # statistics
             running_loss += loss.item() * inputs.size(0)
-            if (i%100) == 1 and ssout:
+            if ssout:
                 print("({}/{})Batch loss: {}".format(i+1, len(trainset), loss.item()), end="\r")
             # running_corrects += torch.sum(preds == labels.data)
 
