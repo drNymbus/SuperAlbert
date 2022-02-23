@@ -76,9 +76,22 @@ def test_model(model, dataset, device=None):
         'top_k': -1#top_k_score
     }
 
-def train_model(model, dataset, criterion, optimizer, decay, batch_size=128, num_epochs=5, num_workers=16, device=None):
+def train_model(model, dataset, criterion, optimizer, decay, batch_size=128, num_epochs=5, num_workers=16, device="cpu"):
     since = time.time()
     history = {}
+
+    with open("results/log.txt", 'a') as f:
+        f.write("e, loss\n")
+
+
+    # Split train and test data
+    train_len = int(len(dataset.dataset)*0.8)
+    test_len = len(dataset.dataset) - train_len
+    trainset, testset = torch.utils.data.random_split(dataset.dataset, [train_len, test_len])
+    # trainset = trainset.to(device)
+    trainset = torch.utils.data.DataLoader(dataset=trainset, batch_size=batch_size,
+                                            num_workers=num_workers, pin_memory=False)
+    
 
     for epoch in range(num_epochs):
         print('Epoch {}/{}'.format(epoch+1, num_epochs))
@@ -87,24 +100,12 @@ def train_model(model, dataset, criterion, optimizer, decay, batch_size=128, num
         running_loss = 0.0
         # running_corrects = 0
 
-        # Split train and test data
-        train_len = int(len(dataset.dataset)*0.8)
-        test_len = len(dataset.dataset) - train_len
-        trainset, testset = torch.utils.data.random_split(dataset.dataset, [train_len, test_len])
-
-        # x: torch.utils.data.DataLoader(image_datasets[x], batch_size=batch_size,
-        #                             shuffle=True if x == 'train' else False,
-        #                             num_workers=num_workers) for x in ['train', 'test']
-
-        trainset = torch.utils.data.DataLoader(dataset=trainset, batch_size=batch_size, num_workers=num_workers)
-        testset = torch.utils.data.DataLoader(dataset=testset, batch_size=batch_size, num_workers=num_workers)
-
         # Iterate over data.
         for i, item in enumerate(trainset):
             inputs, labels = item
-            if device is not None:
-                inputs = inputs.to(device)
-                labels = labels.to(device)
+            # if device is not None:
+            inputs = inputs.to(device)
+            labels = labels.to(device)
 
             # zero the parameter gradients
             optimizer.zero_grad()
@@ -121,7 +122,8 @@ def train_model(model, dataset, criterion, optimizer, decay, batch_size=128, num
 
             # statistics
             running_loss += loss.item() * inputs.size(0)
-            print("({}/{})Batch loss: {}\r".format(i+1, len(trainset), loss.item()), end="")
+            if (i%100) == 1:
+                print("({}/{})Batch loss: {}".format(i+1, len(trainset), loss.item()), end="")
             # running_corrects += torch.sum(preds == labels.data)
 
         # Compute Loss
@@ -129,16 +131,20 @@ def train_model(model, dataset, criterion, optimizer, decay, batch_size=128, num
         print('{} Loss: {:.4f}'.format(epoch, epoch_loss))
 
         # Evaluate model
-        score = test_model(model, testset, device=device)
-        print('{} Score: '.format(epoch))
-        print('\tf_measure(weighted)={}\n\tf_measure(macro)={}\n\ttop_k={}'.format(score["f_weighted"], score["f_macro"], score["top_k"]))
+        # testset = torch.utils.data.DataLoader(dataset=testset, batch_size=batch_size,
+        #                                         num_workers=num_workers, pin_memory=False)
+        # score = test_model(model, testset, device=device)
+        # print('{} Score: '.format(epoch))
+        # print('\tf_measure(weighted)={}\n\tf_measure(macro)={}\n\ttop_k={}'.format(score["f_weighted"], score["f_macro"], score["top_k"]))
 
         decay.step()
 
-        history[epoch] = {
-            "loss" : epoch_loss,
-            "score" : score
-        }
+        # history[epoch] = {
+        #     "loss" : epoch_loss,
+        #     "score" : score
+        # }
+        with open("results/log.txt", 'a') as f:
+            f.write("{epoch}, {epoch_loss}")
 
         print()
 

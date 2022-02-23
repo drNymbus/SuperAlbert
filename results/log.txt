@@ -1,0 +1,13 @@
+e, loss
+e, loss
+e, loss
+e, loss
+e, loss
+e, loss
+e, loss
+e, loss
+e, loss
+e, loss
+e, loss
+e, loss
+{epoch}, {epoch_loss}{epoch}, {epoch_loss}{epoch}, {epoch_loss}{epoch}, {epoch_loss}{epoch}, {epoch_loss}{epoch}, {epoch_loss}{epoch}, {epoch_loss}{epoch}, {epoch_loss}{epoch}, {epoch_loss}{epoch}, {epoch_loss}{epoch}, {epoch_loss}{epoch}, {epoch_loss}
