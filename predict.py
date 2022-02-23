@@ -1,6 +1,7 @@
 import os
 import collector
 from SuperAlbert.model import *
+import utils
 
 def get_predictions(model, dataset, img_set, idx_to_class, device=None):
     model.eval()
@@ -78,13 +79,15 @@ def save_prediction(answers, filename):
 
 if __name__ == "__main__":
     # print("Toto")
-    data_loaders, image_datasets, idx_to_class = collector.get_dataset("./data_testing/", batch_size=128)
+    path = "/home/miashs3/SuperAlbert/results/efficientnet_CCE_v1/"
+    data_loaders, image_datasets, idx_to_class = collector.get_datasets("/home/data/challenge_2022_miashs", batch_size=128)
     trainset, testset = data_loaders["train"], data_loaders["test"]
     img_train, img_test = image_datasets["train"], image_datasets["test"]
 
     # Detect if we have a GPU available
     device = torch.device("cuda:2" if torch.cuda.is_available() else "cpu")
 
-    model = torch.load("/home/miashs3/SuperAlbert/results/efficientnet_CCE_v1/model.torch")
+    model = create_model(len(idx_to_class))
+    model = utils.load_model(path+"model.torch")
     model = model.to(device)
-    get_predictions(model, trainset, img_test, idx_to_class, device=device)
+    get_predictions(model, testset, img_test, idx_to_class, device=device)
