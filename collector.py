@@ -29,19 +29,30 @@ def get_datasets(data_dir, input_size=224, batch_size=128, num_workers=16, devic
     # input_size = 224
     # batch_size = 128
 
+    image_datasets = {
+        x: ImageFolder(os.path.join(data_dir, x), transforms.Compose([transforms.ToTensor()])) for x in ['train', 'test']
+    }
+
+    # Create training and validation dataloaders
+    data_loaders = {
+        x: torch.utils.data.DataLoader(image_datasets[x]) for x in ['train', 'test']
+    }
+
+    # APPLY NORMALIZATION (CENTER & REDUCED)
+    mean, std = normalization_parameter(data_loaders["train"])
     data_transforms = {
         'train': transforms.Compose([
             transforms.RandomResizedCrop(input_size),
             transforms.RandomHorizontalFlip(),
-            transforms.ToTensor()
-            # transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+            transforms.ToTensor(),
+            transforms.Normalize(mean, std)
         ]),
         'test': transforms.Compose([
             transforms.Resize(input_size),
             transforms.CenterCrop(input_size),
-            transforms.ToTensor()
-            # transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-        ]),
+            transforms.ToTensor(),
+            transforms.Normalize(mean, std)
+        ])
     }
 
     image_datasets = {
@@ -55,18 +66,6 @@ def get_datasets(data_dir, input_size=224, batch_size=128, num_workers=16, devic
 
     # APPLY NORMALIZATION (CENTER & REDUCED)
     mean, std = normalization_parameter(data_loaders["train"])
-    data_loaders["train"].dataset.transform = transforms.Compose([
-            transforms.Resize(input_size),
-            transforms.CenterCrop(input_size),
-            transforms.ToTensor(),
-            transforms.Normalize(mean, std)
-        ])
-    data_loaders["test"].dataset.transform = transforms.Compose([
-            transforms.Resize(input_size),
-            transforms.CenterCrop(input_size),
-            transforms.ToTensor(),
-            transforms.Normalize(mean, std)
-        ])
 
     # transformer = transforms.Compose([transforms.Normalize(mean, std)])
     # images_norm = { x : ImageFolder(image_datasets[x], transformer) for x in ["train", "test"] }
