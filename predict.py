@@ -27,7 +27,7 @@ def get_predictions(model, dataset, img_set, idx_to_class, device=None):
             for a in prediction:
                 predicted_class = a.cpu().numpy()
                 s = img_set.imgs[idx][0]
-                answers.append((os.path.basename(os.path.splitext(s)[0]), idx_to_class[int(predicted_class)], outputs.numpy()))
+                answers.append((os.path.basename(os.path.splitext(s)[0]), idx_to_class[int(predicted_class)], outputs.cpu().numpy()))
                 idx += 1
 
     return answers
@@ -88,6 +88,7 @@ if __name__ == "__main__":
     device = torch.device("cuda:2" if torch.cuda.is_available() else "cpu")
 
     model = create_model(len(idx_to_class))
-    model = utils.load_model(path+"model.torch")
+    model = utils.load_model(model, path+"model.torch")
     model = model.to(device)
-    get_predictions(model, testset, img_test, idx_to_class, device=device)
+    answers = get_predictions(model, testset, img_test, idx_to_class, device=device)
+    save_prediction(answers, path+'predictions.csv')
