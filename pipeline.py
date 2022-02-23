@@ -1,6 +1,9 @@
 import torch
 import torch.nn as nn
 
+import timm
+from timm.optim import create_optimizer_v2 as create_optimizer
+
 import time
 import datetime
 
@@ -37,7 +40,8 @@ if __name__ == "__main__":
     model = model.to(device)
 
     # Define loss, optimizer and learning rate
-    optimizer_ft = optim.SGD(model.classifier[1].parameters(), lr=0.01, momentum=0.9, weight_decay=1e-4)
+    optimizer = create_optimizer(model, 'sgd', learning_rate=0.01, momentum=0.9, weight_decay=1e-4)
+    # optimizer_ft = optim.SGD(model.classifier[1].parameters(), lr=0.01, momentum=0.9, weight_decay=1e-4)
     # criterion = CCE(device=device)
     criterion = nn.CrossEntropyLoss()
     learning_rate_decay = MultiStepLR(optimizer_ft, milestones=[30, 40], gamma=0.1)
