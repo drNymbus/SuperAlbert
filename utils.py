@@ -97,7 +97,7 @@ def train_model(model, dataset, criterion, optimizer, decay, batch_size=128, num
 
 
     # Split train and test data
-    train_len = int(len(dataset.dataset)*0.9)
+    train_len = int(len(dataset.dataset)*0.8)
     test_len = len(dataset.dataset) - train_len
     trainset, testset = torch.utils.data.random_split(dataset.dataset, [train_len, test_len])
     # trainset = trainset.to(device)
