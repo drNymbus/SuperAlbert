@@ -79,7 +79,8 @@ def get_datasets(data_dir, input_size=224, batch_size=128, num_workers=16, devic
     return data_loaders, image_datasets, idx_to_class
 
 if __name__ == "__main__":
-    train, test, idx_to_class = get_datasets("../data_testing/", batch_size=1)
+    # data_loaders, image_datasets, idx_to_class = get_datasets("../data_testing/", batch_size=128)
+    data_loaders, image_datasets, idx_to_class = get_datasets("/home/data/challenge_2022_miashs/", batch_size=128)
     # labels_dist = {}
     # for inputs, labels in train:
     #     # print(inputs.shape, idx_to_class[labels])
@@ -88,5 +89,5 @@ if __name__ == "__main__":
     #         labels_dist[cls] += 1
     #     else:
     #         labels_dist[cls] = 1
-
-    print(train)
+    print(normalization_parameter(data_loaders["train"]))
+    # print(train)
