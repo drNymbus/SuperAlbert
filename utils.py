@@ -76,7 +76,7 @@ def test_model(model, dataset, device=None):
         'top_k': -1#top_k_score
     }
 
-def train_model(model, dataset, criterion, optimizer, decay, batch_size=128, num_epochs=5, num_workers=16, device="cpu"):
+def train_model(model, dataset, criterion, optimizer, decay, batch_size=128, num_epochs=5, num_workers=16, device="cpu", history="results/log.txt"):
     since = time.time()
     history = {}
 
@@ -122,8 +122,8 @@ def train_model(model, dataset, criterion, optimizer, decay, batch_size=128, num
 
             # statistics
             running_loss += loss.item() * inputs.size(0)
-            if (i%100) == 1:
-                print("({}/{})Batch loss: {}".format(i+1, len(trainset), loss.item()), end="")
+            # if (i%100) == 1:
+            print("({}/{})Batch loss: {}".format(i+1, len(trainset), loss.item()))
             # running_corrects += torch.sum(preds == labels.data)
 
         # Compute Loss
@@ -131,11 +131,11 @@ def train_model(model, dataset, criterion, optimizer, decay, batch_size=128, num
         print('{} Loss: {:.4f}'.format(epoch, epoch_loss))
 
         # Evaluate model
-        # testset = torch.utils.data.DataLoader(dataset=testset, batch_size=batch_size,
-        #                                         num_workers=num_workers, pin_memory=False)
-        # score = test_model(model, testset, device=device)
-        # print('{} Score: '.format(epoch))
-        # print('\tf_measure(weighted)={}\n\tf_measure(macro)={}\n\ttop_k={}'.format(score["f_weighted"], score["f_macro"], score["top_k"]))
+        testset = torch.utils.data.DataLoader(dataset=testset, batch_size=batch_size,
+                                                num_workers=num_workers, pin_memory=False)
+        score = test_model(model, testset, device=device)
+        print('{} Score: '.format(epoch))
+        print('\tf_measure(weighted)={}\n\tf_measure(macro)={}\n\ttop_k={}'.format(score["f_weighted"], score["f_macro"], score["top_k"]))
 
         decay.step()
 
@@ -144,7 +144,7 @@ def train_model(model, dataset, criterion, optimizer, decay, batch_size=128, num
         #     "score" : score
         # }
         with open("results/log.txt", 'a') as f:
-            f.write("{epoch}, {epoch_loss}")
+            f.write(f"{epoch}, {epoch_loss}")
 
         print()
 
