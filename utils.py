@@ -80,7 +80,7 @@ def train_model(model, dataset, criterion, optimizer, decay, batch_size=128, num
     since = time.time()
     history = {}
 
-    with open("results/log.txt", 'a') as f:
+    with open(history, 'a') as f:
         f.write("e, loss\n")
 
 
@@ -143,7 +143,7 @@ def train_model(model, dataset, criterion, optimizer, decay, batch_size=128, num
         #     "loss" : epoch_loss,
         #     "score" : score
         # }
-        with open("results/log.txt", 'a') as f:
+        with open(history, 'a') as f:
             f.write(f"{epoch}, {epoch_loss}")
 
         print()
