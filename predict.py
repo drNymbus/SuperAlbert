@@ -1,5 +1,4 @@
 import os
-
 import collector
 from SuperAlbert.model import *
 
@@ -27,7 +26,7 @@ def get_predictions(model, dataset, img_set, idx_to_class, device=None):
             for a in prediction:
                 predicted_class = a.cpu().numpy()
                 s = img_set.imgs[idx][0]
-                answers.append((os.path.basename(os.path.splitext(s)[0]), idx_to_class[int(predicted_class)], outputs.cpu().numpy()))
+                answers.append((os.path.basename(os.path.splitext(s)[0]), idx_to_class[int(predicted_class)], outputs.numpy()))
                 idx += 1
 
     return answers
@@ -84,8 +83,8 @@ if __name__ == "__main__":
     img_train, img_test = image_datasets["train"], image_datasets["test"]
 
     # Detect if we have a GPU available
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda:2" if torch.cuda.is_available() else "cpu")
 
-    model = create_model(None, len(idx_to_class))
+    model = torch.load("/home/miashs3/SuperAlbert/results/efficientnet_CCE_v1/model.torch")
     model = model.to(device)
-    get_prediction(model, trainset, img_test, idx_to_class)
+    get_predictions(model, trainset, img_test, idx_to_class, device=device)
