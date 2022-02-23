@@ -39,30 +39,30 @@ def get_datasets(data_dir, input_size=224, batch_size=128, num_workers=16, devic
     }
     print("Data loaded")
     # APPLY NORMALIZATION (CENTER & REDUCED)
-    mean, std = normalization_parameter(data_loaders["train"])
-    data_transforms = {
-        'train': transforms.Compose([
-            transforms.RandomResizedCrop(input_size),
-            transforms.RandomHorizontalFlip(),
-            transforms.ToTensor(),
-            transforms.Normalize(mean, std)
-        ]),
-        'test': transforms.Compose([
-            transforms.Resize(input_size),
-            transforms.CenterCrop(input_size),
-            transforms.ToTensor(),
-            transforms.Normalize(mean, std)
-        ])
-    }
+    # mean, std = normalization_parameter(data_loaders["train"])
+    # data_transforms = {
+    #     'train': transforms.Compose([
+    #         transforms.RandomResizedCrop(input_size),
+    #         transforms.RandomHorizontalFlip(),
+    #         transforms.ToTensor(),
+    #         transforms.Normalize(mean, std)
+    #     ]),
+    #     'test': transforms.Compose([
+    #         transforms.Resize(input_size),
+    #         transforms.CenterCrop(input_size),
+    #         transforms.ToTensor(),
+    #         transforms.Normalize(mean, std)
+    #     ])
+    # }
 
-    image_datasets = {
-        x: ImageFolder(os.path.join(data_dir, x), data_transforms[x]) for x in ['train', 'test']
-    }
+    # image_datasets = {
+    #     x: ImageFolder(os.path.join(data_dir, x), data_transforms[x]) for x in ['train', 'test']
+    # }
 
-    # Create training and validation dataloaders
-    data_loaders = {
-        x: torch.utils.data.DataLoader(image_datasets[x], shuffle=True) for x in ['train', 'test']
-    }
+    # # Create training and validation dataloaders
+    # data_loaders = {
+    #     x: torch.utils.data.DataLoader(image_datasets[x], shuffle=True) for x in ['train', 'test']
+    # }
     print("Data normalized")
 
     # APPLY NORMALIZATION (CENTER & REDUCED)
