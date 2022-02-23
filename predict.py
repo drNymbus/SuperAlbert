@@ -2,6 +2,7 @@ import os
 import collector
 from SuperAlbert.model import *
 import utils
+import pandas as pd
 
 def get_predictions(model, dataset, img_set, idx_to_class, device=None):
     model.eval()
@@ -27,7 +28,7 @@ def get_predictions(model, dataset, img_set, idx_to_class, device=None):
             for a in prediction:
                 predicted_class = a.cpu().numpy()
                 s = img_set.imgs[idx][0]
-                answers.append((os.path.basename(os.path.splitext(s)[0]), idx_to_class[int(predicted_class)], outputs.cpu().numpy()))
+                answers.append((os.path.basename(os.path.splitext(s)[0]), int(idx_to_class[int(predicted_class)], outputs.cpu().numpy()[0])))
                 idx += 1
 
     return answers
@@ -38,6 +39,23 @@ def save_prediction(answers, filename):
         f.write('Id,Category,Confidence\n')
         for k, p, pp in answers:
             f.write('{},{},{}\n'.format(k, p, pp))
+
+def load_prediction_to_submission(filename, filename_result):
+    df = pd.read_csv(filename)
+    df = df.iloc[:, :2]
+    if df.isnull().values.any():
+        df = df.dropna()
+        df = df.reset_index(drop=True)
+    if type(df.iloc[0, 1])!='numpy.int64':
+        df['Category'] = df['Category'].astype(int)
+    df.to_csv(filename_result, index=False)
+
+def create_submission(answers, filename):
+    # save predictions in filename (CSV file format)
+    with open(filename, 'w') as f:
+        f.write('Id,Category\n')
+        for k, p, _ in answers:
+            f.write('{},{}\n'.format(k, p))
 
 # def save_prediction(answers, filename):
 #     # save predictions in filename (CSV file format)
@@ -91,4 +109,4 @@ if __name__ == "__main__":
     model = utils.load_model(model, path+"model.torch")
     model = model.to(device)
     answers = get_predictions(model, testset, img_test, idx_to_class, device=device)
-    save_prediction(answers, path+'predictions.csv')
+    create_submission(answers, path+'predictions.csv')
