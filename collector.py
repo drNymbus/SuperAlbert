@@ -87,9 +87,11 @@ def get_sampler(filename, dataset, idx2cls):
     freq = np.genfromtxt(filename, delimiter=';', dtype='int')
     counts = freq[:,0]
     labels = freq[:,1]
+    idx = freq[:,2]
 
     class_weights = [1/c for c in counts]
-    example_weights = [class_weights[np.where(labels == int(idx2cls[image[1]]))[0][0]] for image in dataset]
+    #example_weights = [class_weights[np.where(labels == int(idx2cls[image[1]]))[0][0]] for image in dataset]
+    example_weights = [class_weights[image[1]] for image in dataset]
     sampler = torch.utils.data.WeightedRandomSampler(example_weights, len(dataset))
 
     return sampler
