@@ -10,11 +10,13 @@ import torchvision.models as models
 from timm.data.transforms_factory import create_transform
 from timm.data import ImageDataset
 
+import numpy as np
+
 import time
 import os
 import json
 
-import utils
+# import utils
 
 # def normalization_parameter(dataloader):
 #     mean = 0.
@@ -69,26 +71,46 @@ def get_datasets(data_dir, input_size=224, batch_size=128, num_workers=16):
 
     return data_loaders, image_datasets, idx_to_class
 
-def get_data_loader(dir, input_size=224, sampler=None, shuffle=False, batch_size=128, num_workers=16, device="cpu"):
-    # sampler = utils.get_sampler()
-    shuffle = False if sampler is None else shuffle
-    dataset = ImageDataset(dir, transform=create_transform(input_size, is_training=True))
-    # for p in dataset.parser:
-    #     print(p)
+def get_dataset(dir, input_size=224):
+    return ImageDataset(dir, transform=create_transform(input_size, is_training=True))
+
+def get_indices_and_classes(dir, input_size=224):
+    dataset = ImageFolder(dir)
+    print("dataset(get_indices_and_classes): ", len(dataset))
+    idx2cls = {v:k for k, v in dataset.class_to_idx.items()}
+    # print("idx: ", len(idx2cls))
+    return idx2cls, dataset.class_to_idx
+
+def get_sampler(filename, dataset, idx2cls):
+    freq = np.genfromtxt(filename, delimiter=';', dtype='int')
+    counts = freq[:,0]
+    labels = freq[:,1]
+
+    class_weights = [1/c for c in counts]
+    example_weights = [class_weights[np.where(labels == int(idx2cls[image[1]]))[0][0]] for image in dataset]
+    sampler = torch.utils.data.WeightedRandomSampler(example_weights, len(dataset))
+    
+    return sampler
+
+def get_data_loader(dataset, sampler=None, shuffle=False, batch_size=128, num_workers=16, device="cpu"):
+    # # sampler = utils.get_sampler()
+    # shuffle = shuffle if sampler is None else False
+    # print("dataset(get_data_loader): ", len(dataset))
+    # # for p in dataset.parser:
+    # #     print(p)
     loader = torch.utils.data.DataLoader(dataset, sampler=sampler, batch_size=batch_size, shuffle=shuffle, num_workers=num_workers)
     # for b in loader:
-    print(len(loader))
+    print("loader(get_data_loader): ", len(loader))
     # idx_to_class = {v: k for k, v in dataset.parser.class_to_idx.items()}
 
     return loader, dataset#, idx_to_class
 
-def get_indices_and_classes(dir, input_size=224):
-    # dataset = ImageDataset(dir, transform=create_transform(input_size))
-    # idx_to_class = {v: k for k, v in dataset.parser.class_to_idx.items()}
-    # return idx_to_class, dataset.parser.class_to_idx
-    dataset = ImageFolder(dir)
-    idx2cls = {v:k for k, v in dataset.class_to_idx.items()}
-    return idx2cls, dataset.class_to_idx
+def get_dataloader(dir, input_size=224, sampler=None, shuffle=False, batch_size=128, num_workers=16, device="cpu"):
+    dataset = get_dataset(dir, input_size=input_size)
+    idx2cls, _ = get_indices_and_classes(dir, input_size=input_size)
+    sampler = None if sampler is None else get_sampler(sampler, dataset, idx2cls)
+    return get_data_loader(dataset, sampler, batch_size=batch_size, shuffle=shuffle, num_workers=num_workers)
+
 
 if __name__ == "__main__":
     # data_loaders, image_datasets, idx_to_class = get_datasets("../data_testing/", batch_size=128)
@@ -101,12 +123,12 @@ if __name__ == "__main__":
     #         labels_dist[cls] += 1
     #     else:
     #         labels_dist[cls] = 1
-    idx2cls, cls2idx = get_indices_and_classes("../data_testing/train")
-    SAMPLER = utils.get_sampler("./data_aux/frequencies.csv", cls2idx)
-    print(SAMPLER)
+    # idx2cls, cls2idx = get_indices_and_classes("../data_testing/train")
+    # SAMPLER = utils.get_sampler("./data_aux/frequencies.csv", cls2idx)
+    # print("sampler(main): ", len(SAMPLER))
     # for a,dir,files in os.walk("../data_testing/train"):
     #     print(a, dir, files)
 
-    trainset, train_img = get_data_loader("../data_testing/train", sampler=SAMPLER, batch_size=1, num_workers=4)
-    print(len(trainset))
+    trainset, train_img = get_dataloader("../data_testing/train", sampler="./data_aux/frequencies.csv", batch_size=1, num_workers=4)
+    print("final length(main): ", len(trainset))
     # print(train)

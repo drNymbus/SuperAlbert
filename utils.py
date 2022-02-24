@@ -110,9 +110,9 @@ def train_model(model, dataset, validation, criterion, optimizer, decay, batch_s
         test_len = len(dataset.dataset) - train_len
         trainset, testset = torch.utils.data.random_split(dataset.dataset, [train_len, test_len])
         # trainset = trainset.to(device)
-        trainset = torch.utils.data.DataLoader(dataset=trainset, batch_size=batch_size, shuffle=True,
+        trainset = torch.utils.data.DataLoader(dataset=trainset, batch_size=batch_size,
                                                 num_workers=num_workers, pin_memory=False)
-        testset = torch.utils.data.DataLoader(dataset=testset, batch_size=batch_size, shuffle=True,
+        testset = torch.utils.data.DataLoader(dataset=testset, batch_size=batch_size,
                                                 num_workers=num_workers, pin_memory=False)
     else:
         trainset = dataset
@@ -193,16 +193,48 @@ def view_history(filename):
 ##################  DATA SELECTION  #####################
 #########################################################
 
-def get_sampler(filename, class_to_idx):
 
-    freq = np.genfromtxt(filename, delimiter=';', dtype='int')
-    counts = freq[:,0]
-    labels = freq[:,1]
+# def get_sampler(filename, class_to_idx):
 
-    class_weights = [1/c for c in counts]
-    example_weights = [class_weights[np.where(labels == int(classe))[0][0]] for classe in class_to_idx.keys()]
-    # print(example_weights)
+    # freq = np.genfromtxt(filename, delimiter=';', dtype='int')
+    # counts = freq[:,0]
+    # labels = freq[:,1]
 
-    # class to index : {134536:0, 1738392:1, }
-    sampler = torch.utils.data.WeightedRandomSampler(example_weights, len(class_to_idx))
-    return sampler
+    # class_weights = [1/c for c in counts]
+    # example_weights = [class_weights[np.where(labels == int(idx2cls[image[1]]))[0][0]] for image in dataset]
+    # # print(example_weights)
+    # # class to index : {134536:0, 1738392:1, }
+    # sampler = torch.utils.data.WeightedRandomSampler(example_weights, len(class_to_idx))
+    
+    # return sampler
+# def get_sampler(filename, class_to_idx):
+
+#     freq = np.genfromtxt(filename, delimiter=';', dtype='int')
+#     counts = freq[:,0]
+#     labels = freq[:,1]
+
+#     class_weights = [1/c for c in counts]
+#     # print(np.where(labels == int(classe))[0][0] for classe in class_to_idx)
+#     example_weights = [class_weights[np.where(labels == int(classe))[0][0]] for classe in class_to_idx.keys()]
+#     # print(example_weights)
+
+#     # class to index : {134536:0, 1738392:1, }
+#     sampler = torch.utils.data.sampler.WeightedRandomSampler(example_weights, num_samples=len(class_to_idx), replacement=True)
+
+#     #Let there be 9 samples and 1 sample in class 0 and 1 respectively
+#     # class_counts = [9.0, 1.0]
+#     # file = np.genfromtxt(filename, delimiter=";", dtype="int")
+#     # freq, labels = file[:, 0], file[:,1]
+#     # print(len(freq), len(labels))
+#     # num_samples = sum(freq)
+#     # # labels = [0, 0,..., 0, 1] #corresponding labels of samples
+
+#     # class_weights = [num_samples/freq[i] for i in range(len(freq))]
+#     # print(labels)
+#     # weights = [class_weights[labels[class_to_idx[i]]] for i in range(int(sum(counts)))]
+#     # print("weights: ", weights)
+#     # sampler = torch.utils.data.sampler.WeightedRandomSampler(torch.DoubleTensor(weights), int(num_samples))
+#     # sampler=None
+#     return sampler
+
+
