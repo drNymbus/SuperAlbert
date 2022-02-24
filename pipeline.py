@@ -16,17 +16,17 @@ from SuperAlbert.cce import CCE
 from SuperAlbert.model import *
 
 if __name__ == "__main__":
+    since = time.time()
     warnings.filterwarnings('ignore', '.*interpolation.*', )
     # chillout timm
 
     suffix = "b3_CE_1"
-    since = time.time()
     RESULTS_PATH = utils.create_model_dir("{}_{}".format(datetime.datetime.now(), suffix))
 
     NB_CLASS = 1081
 
-    EPOCHS = 30
-    BATCH_SIZE = 80
+    EPOCHS = 20
+    BATCH_SIZE = 64
     NUM_WORKERS = 16
 
     SSOUT = True
@@ -49,11 +49,11 @@ if __name__ == "__main__":
     model = model.to(device)
 
     # Define loss, optimizer and learning rate
-    optimizer_ft = create_optimizer(model, 'sgd', learning_rate=0.001, momentum=0.9, weight_decay=1e-4)
+    optimizer_ft = create_optimizer(model, 'sgd', learning_rate=0.01, momentum=0.9, weight_decay=1e-4)
     # optimizer_ft = optim.SGD(model.classifier[1].parameters(), lr=0.01, momentum=0.9, weight_decay=1e-4)
     # criterion = CCE(device=device)
     criterion = nn.CrossEntropyLoss()
-    learning_rate_decay = MultiStepLR(optimizer_ft, milestones=[22, 27], gamma=0.1)
+    learning_rate_decay = MultiStepLR(optimizer_ft, milestones=[15, 18], gamma=0.1)
 
     # Train and evaluate
     history_path = RESULTS_PATH + "history.csv"
@@ -70,7 +70,7 @@ if __name__ == "__main__":
 
     # Generate Predictions
     # testset, test_img = collector.get_data_loader("../data_testing/", batch_size=BATCH_SIZE, num_workers=NUM_WORKERS)
-    testset, test_img, _ = collector.get_data_loader("/home/data/challenge_2022_miashs/test/", batch_size=BATCH_SIZE, num_workers=NUM_WORKERS)
+    # testset, test_img = collector.get_data_loader("/home/data/challenge_2022_miashs/test/", batch_size=BATCH_SIZE, num_workers=NUM_WORKERS)
 
     # answers = predict.get_predictions(model, testset, test_img, idx_to_class, device=device, ssout=SSOUT)
     # print("Predictions done ...")
