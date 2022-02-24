@@ -179,3 +179,21 @@ def train_model(model, dataset, criterion, optimizer, decay, batch_size=128, num
 
 def view_history(filename):
     pass
+
+#########################################################
+##################  DATA SELECTION  #####################
+#########################################################
+
+def get_sampler(filename, class_to_idx):
+
+    freq = np.genfromtxt(filename, delimiter=';', dtype='int')
+    counts = freq[:,0]
+    labels = freq[:,1]
+
+    class_weights = [1/c for c in counts]
+    example_weights = [class_weights[np.where(labels == int(classe))[0][0]] for classe in class_to_idx.keys()]
+    print(example_weights)
+
+    # class to index : {134536:0, 1738392:1, }
+    sampler = torch.utils.data.WeightedRandomSampler(example_weights, len(class_to_idx))
+    return sampler

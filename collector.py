@@ -12,6 +12,9 @@ from timm.data import ImageDataset
 
 import time
 import os
+import json
+
+import utils
 
 # def normalization_parameter(dataloader):
 #     mean = 0.
@@ -66,18 +69,23 @@ def get_datasets(data_dir, input_size=224, batch_size=128, num_workers=16):
 
     return data_loaders, image_datasets, idx_to_class
 
-def get_data_loader(dir, input_size=224, batch_size=128, num_workers=16, device="cpu"):
+def get_data_loader(dir, input_size=224, sampler=None, batch_size=128, num_workers=16, device="cpu"):
+    sampler = utils.get_sampler()
     dataset = ImageDataset(dir, 
                        transform=create_transform(input_size, is_training=True))
-    loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=num_workers)
+    loader = torch.utils.data.DataLoader(dataset, sampler=sampler, batch_size=batch_size, shuffle=True, num_workers=num_workers)
 
-    # idx_to_class = {v: k for k, v in dataset.class_to_idx.items()}
+    idx_to_class = {v: k for k, v in dataset.parser.class_to_idx.items()}
 
-    return loader, dataset#, idx_to_class
+    return loader, dataset, idx_to_class
 
+def get_indices_and_classes(dir, input_size=224):
+    dataset = ImageDataset(dir, transform=create_transform(input_size, is_training=True))
+    idx_to_class = {v: k for k, v in dataset.parser.class_to_idx.items()}
+    return idx_to_class, dataset.parser.class_to_idx
 
 if __name__ == "__main__":
-    data_loaders, image_datasets, idx_to_class = get_datasets("../data/", batch_size=128)
+    data_loaders, image_datasets, idx_to_class = get_datasets("../data_testing/", batch_size=128)
     # data_loaders, image_datasets, idx_to_class = get_datasets("/home/data/challenge_2022_miashs/", batch_size=128)
     # labels_dist = {}
     # for inputs, labels in train:
@@ -87,5 +95,6 @@ if __name__ == "__main__":
     #         labels_dist[cls] += 1
     #     else:
     #         labels_dist[cls] = 1
-    print(normalization_parameter(data_loaders["train"]))
+    idx2cls, cls2idx = get_indices_and_classes("../data_testing/train/")
+    print(utils.get_sampler("../data_aux/frequencies.csv", cls2idx))
     # print(train)
