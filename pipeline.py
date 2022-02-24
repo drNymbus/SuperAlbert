@@ -37,10 +37,10 @@ if __name__ == "__main__":
     # Data loading
     # trainset, train_img = collector.get_data_loader("../data_testing/", batch_size=BATCH_SIZE, num_workers=NUM_WORKERS)
     # trainset, train_img = collector.get_data_loader("/home/data/challenge_2022_miashs/", batch_size=BATCH_SIZE, num_workers=NUM_WORKERS)
-    idx2cls, cls2idx = collector.get_indices_and_classes("/home/data/challenge_2022_miashs/train/")
+    idx2cls, cls2idx = collector.get_indices_and_classes("/home/data/challenge_2022_miashs/train")
     SAMPLER = utils.get_sampler("/home/miashs3/SuperAlbert/data_aux/frequencies.csv", cls2idx)
 
-    trainset, train_img = collector.get_data_loader("/home/data/challenge_2022_miashs/train/", sampler=SAMPLER, batch_size=BATCH_SIZE, num_workers=NUM_WORKERS)
+    trainset, train_img = collector.get_data_loader("/home/data/challenge_2022_miashs/train", sampler=SAMPLER, batch_size=BATCH_SIZE, num_workers=NUM_WORKERS)
     # trainset, testset = data_loaders["train"], data_loaders["test"]
     # img_train, img_test = image_datasets["train"], image_datasets["test"]
 
