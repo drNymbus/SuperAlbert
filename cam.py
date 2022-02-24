@@ -73,8 +73,8 @@ def do_cam(image_path):
 
     # EfficientNet
     #if model_type == 'efficientnet':
-    model = create_model_b3(len(idx_to_class)).eval()
-    model.load_state_dict(torch.load('results/efficientnet_b3_CCE_v1/model.torch'))
+    model = create_model_resnet(len(idx_to_class)).eval()
+    model.load_state_dict(torch.load('results/2022-02-24 01:09:02.231283_resnet_CE_1/model.torch'))
     
     # hook the feature extractor
     # https://github.com/zhoubolei/CAM/blob/master/pytorch_CAM.py
@@ -85,11 +85,11 @@ def do_cam(image_path):
     #print(model)
     #Resnet 
     #if model_type == 'resnet':
-    #    model._modules.get("layer4").register_forward_hook(hook_feature)
+    model._modules.get("layer4").register_forward_hook(hook_feature)
     
     #EfficientNet 
     #if model_type == 'efficientnet':
-    model._modules.get("features").register_forward_hook(hook_feature)
+    #model._modules.get("features").register_forward_hook(hook_feature)
     
     # get the softmax weight
     params = list(model.parameters())
@@ -129,8 +129,8 @@ def do_cam(image_path):
 
 if __name__ == "__main__":
  
-    directory = '/home/data/challenge_2022_miashs/train/1365961'
-    # folder with 20 images : '1698065', '1365961'
+    directory = '/home/data/challenge_2022_miashs/train/1363688'
+    # folder with 20 images : '1698065', '1365961', '1363688'
 
     for filename in os.listdir(directory):
         if filename.endswith(".jpg"):
