@@ -116,6 +116,7 @@ def train_model(model, dataset, validation, criterion, optimizer, decay, batch_s
                                                 num_workers=num_workers, pin_memory=False)
     else:
         trainset = dataset
+        print("false")
     # mean, std = collector.normalization_parameter(testset)
     # print("mean={}, std={}".format(mean, std))
 
@@ -166,9 +167,9 @@ def train_model(model, dataset, validation, criterion, optimizer, decay, batch_s
         decay.step()
 
         with open(history, 'a') as f:
-            row = f"{epoch}, {epoch_loss}"
+            row = f"{epoch}; {epoch_loss}"
             if validation:
-                row += f", {score}"    
+                row += f"; {score}"    
             f.write(row + "\n")
 
         print()

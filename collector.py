@@ -100,7 +100,7 @@ def get_data_loader(dataset, sampler=None, shuffle=False, batch_size=128, num_wo
     # #     print(p)
     loader = torch.utils.data.DataLoader(dataset, sampler=sampler, batch_size=batch_size, shuffle=shuffle, num_workers=num_workers)
     # for b in loader:
-    print("loader(get_data_loader): ", len(loader))
+    # print("loader(get_data_loader): ", len(loader))
     # idx_to_class = {v: k for k, v in dataset.parser.class_to_idx.items()}
 
     return loader, dataset#, idx_to_class

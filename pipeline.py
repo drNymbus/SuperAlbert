@@ -42,10 +42,11 @@ if __name__ == "__main__":
 
     # trainset, train_img = collector.get_dataloader("../data_testing/train", sampler="./data_aux/frequencies.csv", batch_size=BATCH_SIZE, num_workers=NUM_WORKERS)
     trainset, train_img = collector.get_dataloader("/home/data/challenge_2022_miashs/train", sampler="/home/miashs3/SuperAlbert/data_aux/frequencies.csv", batch_size=BATCH_SIZE, num_workers=NUM_WORKERS)
-
+    if SSOUT: print("Data loaded ...")
     # Init model
     model = create_model_b3(NB_CLASS)
     model = model.to(device)
+    if SSOUT: print("Model loaded ...")
 
     # Define loss, optimizer and learning rate
     optimizer_ft = create_optimizer(model, 'sgd', learning_rate=0.01, momentum=0.9, weight_decay=1e-4)
@@ -69,11 +70,12 @@ if __name__ == "__main__":
 
     # Generate Predictions
     # testset, test_img = collector.get_dataloader("../data_testing/", batch_size=BATCH_SIZE, num_workers=NUM_WORKERS)
-    testset, test_img = collector.get_dataloader("/home/data/challenge_2022_miashs/test/", batch_size=BATCH_SIZE, num_workers=NUM_WORKERS)
+    # idx2cls = collector.get_indices_and_classes("")
+    # testset, test_img = collector.get_dataloader("/home/data/challenge_2022_miashs/test/", batch_size=BATCH_SIZE, num_workers=NUM_WORKERS)
 
-    answers = predict.get_predictions(model, testset, test_img, idx2cls, device=device, ssout=SSOUT)
-    print("Predictions done ...")
-    predict.save_predictions(answers, RESULTS_PATH + "prediction.csv")
+    # answers = predict.get_predictions(model, testset, test_img, idx2cls, device=device, ssout=SSOUT)
+    # print("Predictions done ...")
+    # predict.save_predictions(answers, RESULTS_PATH + "prediction.csv")
 
     time_elapsed = time.time() - since
     print("Pipeline terminated after {}m {}s".format(time_elapsed//60, time_elapsed%60))
