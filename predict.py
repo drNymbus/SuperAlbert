@@ -60,6 +60,13 @@ def create_submission(answers, filename):
         for k, p, _ in answers:
             f.write('{},{}\n'.format(k, p))
 
+def create_predictions(answers, filename):
+    # save predictions in filename (CSV file format)
+    with open(filename, 'w') as f:
+        f.write('Id,Category,Confidence\n')
+        for k, p, pp in answers:
+            f.write('{},{},{}\n'.format(k, p, pp))
+
 # def save_prediction(answers, filename):
 #     # save predictions in filename (CSV file format)
 #     with open(filename, 'w') as f:
@@ -100,7 +107,7 @@ def create_submission(answers, filename):
 
 if __name__ == "__main__":
     # print("Toto")
-    path = "/home/miashs3/SuperAlbert/results/2022-02-24 19:48:14.426818_b3_CE_1/"
+    path = "/home/miashs3/SuperAlbert/results/2022-02-24 01:09:02.231283_resnet_CE_1/"
     data_loaders, image_datasets, idx_to_class = collector.get_datasets("/home/data/challenge_2022_miashs", batch_size=128)
     trainset, testset = data_loaders["train"], data_loaders["test"]
     img_train, img_test = image_datasets["train"], image_datasets["test"]
@@ -108,8 +115,10 @@ if __name__ == "__main__":
     # Detect if we have a GPU available
     device = torch.device("cuda:2" if torch.cuda.is_available() else "cpu")
 
-    model = create_model_b3(len(idx_to_class))
+    model = create_model_resnet(len(idx_to_class))
     model = utils.load_model(model, path+"model.torch")
     model = model.to(device)
     answers = get_predictions(model, testset, img_test, idx_to_class, device=device)
-    create_submission(answers, path+'predictions.csv')
+    create_predictions(answers, path+'predictions.csv')
+    load_prediction_to_submission(path+'predictions.csv', path+'submission.csv')
+    # create_submission(answers, path+'predictions.csv')
