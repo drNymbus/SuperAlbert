@@ -108,7 +108,7 @@ if __name__ == "__main__":
     # Detect if we have a GPU available
     device = torch.device("cuda:2" if torch.cuda.is_available() else "cpu")
 
-    model = create_model(len(idx_to_class))
+    model = create_model_resnet(len(idx_to_class))
     model = utils.load_model(model, path+"model.torch")
     model = model.to(device)
     answers = get_predictions(model, testset, img_test, idx_to_class, device=device)
