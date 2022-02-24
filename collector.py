@@ -71,8 +71,7 @@ def get_datasets(data_dir, input_size=224, batch_size=128, num_workers=16):
 
 def get_data_loader(dir, input_size=224, sampler=None, batch_size=128, num_workers=16, device="cpu"):
     sampler = utils.get_sampler()
-    dataset = ImageDataset(dir, 
-                       transform=create_transform(input_size, is_training=True))
+    dataset = ImageDataset(dir, transform=create_transform(input_size, is_training=True))
     loader = torch.utils.data.DataLoader(dataset, sampler=sampler, batch_size=batch_size, shuffle=True, num_workers=num_workers)
 
     idx_to_class = {v: k for k, v in dataset.parser.class_to_idx.items()}
@@ -80,7 +79,7 @@ def get_data_loader(dir, input_size=224, sampler=None, batch_size=128, num_worke
     return loader, dataset, idx_to_class
 
 def get_indices_and_classes(dir, input_size=224):
-    dataset = ImageDataset(dir, transform=create_transform(input_size, is_training=True))
+    dataset = ImageDataset(dir, transform=create_transform(input_size))
     idx_to_class = {v: k for k, v in dataset.parser.class_to_idx.items()}
     return idx_to_class, dataset.parser.class_to_idx
 

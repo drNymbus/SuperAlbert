@@ -57,7 +57,7 @@ if __name__ == "__main__":
 
     # Train and evaluate
     history_path = RESULTS_PATH + "history.csv"
-    model, history = utils.train_model(model, trainset,
+    model, history = utils.train_model(model, trainset, False,
                                        criterion, optimizer_ft, learning_rate_decay,
                                        batch_size=BATCH_SIZE, num_epochs=EPOCHS,
                                        num_workers=NUM_WORKERS, device=device, history=history_path,
