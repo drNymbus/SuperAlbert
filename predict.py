@@ -39,12 +39,12 @@ def get_predictions(model, dataset, img_set, idx_to_class, device=None, ssout=Fa
 def save_predictions(answers, filename):
     # save predictions in filename (CSV file format)
     with open(filename, 'w') as f:
-        f.write('Id,Category,Confidence\n')
+        f.write('Id;Category;Confidence\n')
         for k, p, pp in answers:
-            f.write('{},{},{}\n'.format(k, p, pp))
+            f.write('{};{};{}\n'.format(k, p, pp))
 
 def load_prediction_to_submission(filename, filename_result):
-    df = pd.read_csv(filename)
+    df = pd.read_csv(filename, sep=";")
     df = df.iloc[:, :2]
     if df.isnull().values.any():
         df = df.dropna()
@@ -56,16 +56,16 @@ def load_prediction_to_submission(filename, filename_result):
 def create_submission(answers, filename):
     # save predictions in filename (CSV file format)
     with open(filename, 'w') as f:
-        f.write('Id,Category\n')
+        f.write('Id;Category\n')
         for k, p, _ in answers:
-            f.write('{},{}\n'.format(k, p))
+            f.write('{};{}\n'.format(k, p))
 
 def create_predictions(answers, filename):
     # save predictions in filename (CSV file format)
     with open(filename, 'w') as f:
-        f.write('Id,Category,Confidence\n')
+        f.write('Id;Category;Confidence\n')
         for k, p, pp in answers:
-            f.write('{},{},{}\n'.format(k, p, pp))
+            f.write('{};{};{}\n'.format(k, p, pp))
 
 # def save_prediction(answers, filename):
 #     # save predictions in filename (CSV file format)

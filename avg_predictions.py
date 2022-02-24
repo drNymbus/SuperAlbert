@@ -39,12 +39,12 @@ def str_to_list(string):
     return string
 
 def get_name(filename):
-    df = pd.read_csv(filename)
+    df = pd.read_csv(filename, sep=";")
     df = df.iloc[:, :2]
     return df
 
 def get_conf(filename):
-    df = pd.read_csv(filename)
+    df = pd.read_csv(filename, sep=";")
     conf = pd.DataFrame(df.iloc[:, -1], columns=['Confidence'])
     conf['Confidence'] = conf['Confidence'].apply(str_to_list)
     return conf
