@@ -89,7 +89,7 @@ def get_sampler(filename, dataset, idx2cls):
     class_weights = [1/c for c in counts]
     example_weights = [class_weights[np.where(labels == int(idx2cls[image[1]]))[0][0]] for image in dataset]
     sampler = torch.utils.data.WeightedRandomSampler(example_weights, len(dataset))
-    
+
     return sampler
 
 def get_data_loader(dataset, sampler=None, shuffle=False, batch_size=128, num_workers=16, device="cpu"):
@@ -108,27 +108,10 @@ def get_data_loader(dataset, sampler=None, shuffle=False, batch_size=128, num_wo
 def get_dataloader(dir, input_size=224, sampler=None, shuffle=False, batch_size=128, num_workers=16, device="cpu"):
     dataset = get_dataset(dir, input_size=input_size)
     idx2cls, _ = get_indices_and_classes(dir, input_size=input_size)
-    sampler = None if sampler is None else get_sampler(sampler, dataset, idx2cls)
+    sampler = None if sampler is None else get_sampler(sampler, ImageFolder(dir), idx2cls)
     return get_data_loader(dataset, sampler, batch_size=batch_size, shuffle=shuffle, num_workers=num_workers)
 
-
 if __name__ == "__main__":
-    # data_loaders, image_datasets, idx_to_class = get_datasets("../data_testing/", batch_size=128)
-    # data_loaders, image_datasets, idx_to_class = get_datasets("/home/data/challenge_2022_miashs/", batch_size=128)
-    # labels_dist = {}
-    # for inputs, labels in train:
-    #     # print(inputs.shape, idx_to_class[labels])
-    #     cls = labels[0]
-    #     if cls in labels_dist:
-    #         labels_dist[cls] += 1
-    #     else:
-    #         labels_dist[cls] = 1
-    # idx2cls, cls2idx = get_indices_and_classes("../data_testing/train")
-    # SAMPLER = utils.get_sampler("./data_aux/frequencies.csv", cls2idx)
-    # print("sampler(main): ", len(SAMPLER))
-    # for a,dir,files in os.walk("../data_testing/train"):
-    #     print(a, dir, files)
-
     trainset, train_img = get_dataloader("../data_testing/train", sampler="./data_aux/frequencies.csv", batch_size=1, num_workers=4)
     print("final length(main): ", len(trainset))
     # print(train)
