@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import re
+import csv
 
 def sorted_df(list_filenames):
     for file in list_filenames:
@@ -84,7 +85,15 @@ def get_class(dico, df):
         df.loc[i, 'Category_pred'] = dico[df.loc[i, "max_index"]]
     return df
 
-def process(list_filenames):
+def get_dico(filename):
+    df = pd.read_csv(filename, sep=";")
+    if len(df.columns)==3:
+        df = df.iloc[:, :2]
+    # dict_ = df.to_dict('records')
+    mydict = {row[0] : row[1] for _, row in df.iterrows()}
+    return mydict
+
+def process(list_filenames, dico_idx):
     sorted_df(list_filenames)
     names = get_name(list_filenames[0])
     list_df = []
@@ -92,7 +101,7 @@ def process(list_filenames):
         df = get_conf(file)
         list_df.append(df)
     df_final = get_final_class(list_df)
-    df_final = get_class(dico, df_final)
+    df_final = get_class(dico_idx, df_final)
     df = pd.concat([df_final, names], axis=1)
     df = df.loc[:, ['Id', 'Category_pred']]
     df = df.rename(columns={'Id': 'Id', 'Category_pred': 'Category'})
@@ -109,6 +118,8 @@ if __name__ == "__main__":
 	models_names = ['resnet50', 'autres noms de modèle']
 	print("Aggregation of : {}".format(models_names))
 	list_filenames = get_files(models_names)
+	print("Getting idx_to_class dictionary...")
+	dico_idx = get_dico("/home/miashs3/SuperAlbert/data_aux/idx2cls.csv")
 	print("Start processing...")
-    process(list_filenames)
+    process(list_filenames, dico_idx)
     print("Processing Done : final_submission.csv created !")
