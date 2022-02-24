@@ -37,8 +37,8 @@ if __name__ == "__main__":
     # Data loading
     # trainset, train_img = collector.get_data_loader("../data_testing/", batch_size=BATCH_SIZE, num_workers=NUM_WORKERS)
     # trainset, train_img = collector.get_data_loader("/home/data/challenge_2022_miashs/", batch_size=BATCH_SIZE, num_workers=NUM_WORKERS)
-    idx2cls, cls2idx = collector.get_indices_and_classes("/home/data/challenge_2022/train/")
-    SAMPLER = utils.get_sampler(cls2idx, "/home/miashs3/SuperAlbert/data_aux/frequencies.csv")
+    idx2cls, cls2idx = collector.get_indices_and_classes("/home/data/challenge_2022_miashs/train/")
+    SAMPLER = utils.get_sampler("/home/miashs3/SuperAlbert/data_aux/frequencies.csv", cls2idx)
 
     trainset, train_img = collector.get_data_loader("/home/data/challenge_2022_miashs/train/", sampler=SAMPLER, batch_size=BATCH_SIZE, num_workers=NUM_WORKERS)
     # trainset, testset = data_loaders["train"], data_loaders["test"]
@@ -57,7 +57,7 @@ if __name__ == "__main__":
 
     # Train and evaluate
     history_path = RESULTS_PATH + "history.csv"
-    model, history = utils.train_model(model, trainset,
+    model, history = utils.train_model(model, trainset, False,
                                        criterion, optimizer_ft, learning_rate_decay,
                                        batch_size=BATCH_SIZE, num_epochs=EPOCHS,
                                        num_workers=NUM_WORKERS, device=device, history=history_path,

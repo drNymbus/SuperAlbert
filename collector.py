@@ -69,20 +69,23 @@ def get_datasets(data_dir, input_size=224, batch_size=128, num_workers=16):
 
     return data_loaders, image_datasets, idx_to_class
 
-def get_data_loader(dir, input_size=224, sampler=None, batch_size=128, num_workers=16, device="cpu"):
-    sampler = utils.get_sampler()
-    dataset = ImageDataset(dir, 
-                       transform=create_transform(input_size, is_training=True))
-    loader = torch.utils.data.DataLoader(dataset, sampler=sampler, batch_size=batch_size, shuffle=True, num_workers=num_workers)
+def get_data_loader(dir, input_size=224, sampler=None, shuffle=False, batch_size=128, num_workers=16, device="cpu"):
+    # sampler = utils.get_sampler()
+    shuffle = False if sampler is None else shuffle
+    dataset = ImageDataset(dir, transform=create_transform(input_size, is_training=True))
+    loader = torch.utils.data.DataLoader(dataset, sampler=sampler, batch_size=batch_size, shuffle=shuffle, num_workers=num_workers)
 
-    idx_to_class = {v: k for k, v in dataset.parser.class_to_idx.items()}
+    # idx_to_class = {v: k for k, v in dataset.parser.class_to_idx.items()}
 
-    return loader, dataset, idx_to_class
+    return loader, dataset#, idx_to_class
 
 def get_indices_and_classes(dir, input_size=224):
-    dataset = ImageDataset(dir, transform=create_transform(input_size, is_training=True))
-    idx_to_class = {v: k for k, v in dataset.parser.class_to_idx.items()}
-    return idx_to_class, dataset.parser.class_to_idx
+    # dataset = ImageDataset(dir, transform=create_transform(input_size))
+    # idx_to_class = {v: k for k, v in dataset.parser.class_to_idx.items()}
+    # return idx_to_class, dataset.parser.class_to_idx
+    dataset = ImageFolder(dir)
+    idx2cls = {v:k for k, v in dataset.class_to_idx.items()}
+    return idx2cls, dataset.class_to_idx
 
 if __name__ == "__main__":
     data_loaders, image_datasets, idx_to_class = get_datasets("../data_testing/", batch_size=128)

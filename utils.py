@@ -93,24 +93,29 @@ def test_model(model, dataset, device=None, ssout=False):
 
     return score
 
-def train_model(model, dataset, criterion, optimizer, decay, batch_size=128, num_epochs=5, num_workers=16, device="cpu", history="results/log.txt", ssout=False):
+def train_model(model, dataset, validation, criterion, optimizer, decay, batch_size=128, num_epochs=5, num_workers=16, device="cpu", history="results/log.txt", ssout=False):
     since = time.time()
     # history = {}
 
     with open(history, 'a') as f:
-        f.write("e, loss\n")
+        header = "e, loss"
+        if validation:
+            header += ", score"
+        f.write(header + "\n")
 
 
     # Split train and test data
-    train_len = int(len(dataset.dataset)*0.8)
-    test_len = len(dataset.dataset) - train_len
-    trainset, testset = torch.utils.data.random_split(dataset.dataset, [train_len, test_len])
-    # trainset = trainset.to(device)
-    trainset = torch.utils.data.DataLoader(dataset=trainset, batch_size=batch_size, shuffle=True,
-                                            num_workers=num_workers, pin_memory=False)
-    testset = torch.utils.data.DataLoader(dataset=testset, batch_size=batch_size, shuffle=True,
-                                            num_workers=num_workers, pin_memory=False)
-
+    if validation:
+        train_len = int(len(dataset.dataset)*0.8)
+        test_len = len(dataset.dataset) - train_len
+        trainset, testset = torch.utils.data.random_split(dataset.dataset, [train_len, test_len])
+        # trainset = trainset.to(device)
+        trainset = torch.utils.data.DataLoader(dataset=trainset, batch_size=batch_size, shuffle=True,
+                                                num_workers=num_workers, pin_memory=False)
+        testset = torch.utils.data.DataLoader(dataset=testset, batch_size=batch_size, shuffle=True,
+                                                num_workers=num_workers, pin_memory=False)
+    else:
+        trainset = dataset
     # mean, std = collector.normalization_parameter(testset)
     # print("mean={}, std={}".format(mean, std))
 
@@ -153,14 +158,18 @@ def train_model(model, dataset, criterion, optimizer, decay, batch_size=128, num
         print('Loss: {:.4f}'.format(epoch_loss))
 
         # Evaluate model
-        score = test_model(model, testset, device=device, ssout=ssout)
-        print('Score: ')
-        print('\tf_measure(weighted)={}\n\tf_measure(macro)={}\n\ttop_k={}'.format(score["f_weighted"], score["f_macro"], score["top_k"]))
+        if validation:
+            score = test_model(model, testset, device=device, ssout=ssout)
+            print('Score: ')
+            print('\tf_measure(weighted)={}\n\tf_measure(macro)={}\n\ttop_k={}'.format(score["f_weighted"], score["f_macro"], score["top_k"]))
 
         decay.step()
 
         with open(history, 'a') as f:
-            f.write(f"{epoch}, {epoch_loss}, {score}")
+            row = f"{epoch}, {epoch_loss}"
+            if validation:
+                row += f", {score}"    
+            f.write(row + "\n")
 
         print()
 
@@ -192,7 +201,7 @@ def get_sampler(filename, class_to_idx):
 
     class_weights = [1/c for c in counts]
     example_weights = [class_weights[np.where(labels == int(classe))[0][0]] for classe in class_to_idx.keys()]
-    print(example_weights)
+    # print(example_weights)
 
     # class to index : {134536:0, 1738392:1, }
     sampler = torch.utils.data.WeightedRandomSampler(example_weights, len(class_to_idx))
