@@ -73,8 +73,11 @@ def get_data_loader(dir, input_size=224, sampler=None, shuffle=False, batch_size
     # sampler = utils.get_sampler()
     shuffle = False if sampler is None else shuffle
     dataset = ImageDataset(dir, transform=create_transform(input_size, is_training=True))
+    # for p in dataset.parser:
+    #     print(p)
     loader = torch.utils.data.DataLoader(dataset, sampler=sampler, batch_size=batch_size, shuffle=shuffle, num_workers=num_workers)
-
+    # for b in loader:
+    print(len(loader))
     # idx_to_class = {v: k for k, v in dataset.parser.class_to_idx.items()}
 
     return loader, dataset#, idx_to_class
@@ -88,7 +91,7 @@ def get_indices_and_classes(dir, input_size=224):
     return idx2cls, dataset.class_to_idx
 
 if __name__ == "__main__":
-    data_loaders, image_datasets, idx_to_class = get_datasets("../data_testing/", batch_size=128)
+    # data_loaders, image_datasets, idx_to_class = get_datasets("../data_testing/", batch_size=128)
     # data_loaders, image_datasets, idx_to_class = get_datasets("/home/data/challenge_2022_miashs/", batch_size=128)
     # labels_dist = {}
     # for inputs, labels in train:
@@ -98,6 +101,12 @@ if __name__ == "__main__":
     #         labels_dist[cls] += 1
     #     else:
     #         labels_dist[cls] = 1
-    idx2cls, cls2idx = get_indices_and_classes("../data_testing/train/")
-    print(utils.get_sampler("../data_aux/frequencies.csv", cls2idx))
+    idx2cls, cls2idx = get_indices_and_classes("../data_testing/train")
+    SAMPLER = utils.get_sampler("./data_aux/frequencies.csv", cls2idx)
+    print(SAMPLER)
+    # for a,dir,files in os.walk("../data_testing/train"):
+    #     print(a, dir, files)
+
+    trainset, train_img = get_data_loader("../data_testing/train", sampler=SAMPLER, batch_size=1, num_workers=4)
+    print(len(trainset))
     # print(train)
