@@ -26,7 +26,7 @@ if __name__ == "__main__":
     NB_CLASS = 1081
 
     EPOCHS = 20
-    BATCH_SIZE = 1
+    BATCH_SIZE = 80
     NUM_WORKERS = 16
 
     SSOUT = True
@@ -41,7 +41,9 @@ if __name__ == "__main__":
     # SAMPLER = utils.get_sampler("/home/miashs3/SuperAlbert/data_aux/frequencies.csv", cls2idx)
 
     # trainset, train_img = collector.get_dataloader("../data_testing/train", sampler="./data_aux/frequencies.csv", batch_size=BATCH_SIZE, num_workers=NUM_WORKERS)
-    trainset, train_img = collector.get_dataloader("/home/data/challenge_2022_miashs/train", sampler="/home/miashs3/SuperAlbert/data_aux/frequencies.csv", batch_size=BATCH_SIZE, num_workers=NUM_WORKERS)
+    trainset, train_img = collector.get_dataloader("/home/data/challenge_2022_miashs/train",
+                                                    sampler="/home/miashs3/SuperAlbert/data_aux/frequencies.csv",
+                                                    batch_size=BATCH_SIZE, num_workers=NUM_WORKERS)
     if SSOUT: print("Data loaded ...")
     # Init model
     model = create_model_b3(NB_CLASS)

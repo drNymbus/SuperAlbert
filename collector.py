@@ -72,11 +72,13 @@ def get_datasets(data_dir, input_size=224, batch_size=128, num_workers=16):
     return data_loaders, image_datasets, idx_to_class
 
 def get_dataset(dir, input_size=224):
-    return ImageDataset(dir, transform=create_transform(input_size, is_training=True))
+    folder = ImageFolder(dir, input_size=input_size)
+    file = ImageDataset(dir, transform=create_transform(input_size, is_training=True))
+    return file, folder
 
 def get_indices_and_classes(dir, input_size=224):
     dataset = ImageFolder(dir)
-    print("dataset(get_indices_and_classes): ", len(dataset))
+    # print("dataset(get_indices_and_classes): ", len(dataset))
     idx2cls = {v:k for k, v in dataset.class_to_idx.items()}
     # print("idx: ", len(idx2cls))
     return idx2cls, dataset.class_to_idx
@@ -106,12 +108,15 @@ def get_data_loader(dataset, sampler=None, shuffle=False, batch_size=128, num_wo
     return loader, dataset#, idx_to_class
 
 def get_dataloader(dir, input_size=224, sampler=None, shuffle=False, batch_size=128, num_workers=16, device="cpu"):
-    dataset = get_dataset(dir, input_size=input_size)
+    dataset, folder = get_dataset(dir, input_size=input_size)
+    print("dataset")
     idx2cls, _ = get_indices_and_classes(dir, input_size=input_size)
-    sampler = None if sampler is None else get_sampler(sampler, ImageFolder(dir), idx2cls)
+    print("idx2cls")
+    sampler = None if sampler is None else get_sampler(sampler, folder, idx2cls)
+    print("sampler")
     return get_data_loader(dataset, sampler, batch_size=batch_size, shuffle=shuffle, num_workers=num_workers)
 
 if __name__ == "__main__":
-    trainset, train_img = get_dataloader("../data_testing/train", sampler="./data_aux/frequencies.csv", batch_size=1, num_workers=4)
+    trainset, train_img = get_dataloader("../data/train", sampler="./data_aux/frequencies.csv", batch_size=1, num_workers=4)
     print("final length(main): ", len(trainset))
     # print(train)
