@@ -100,7 +100,7 @@ def create_submission(answers, filename):
 
 if __name__ == "__main__":
     # print("Toto")
-    path = "/home/miashs3/SuperAlbert/results/efficientnet_CCE_v1/"
+    path = "/home/miashs3/SuperAlbert/results/2022-02-24 01:09:02.231283_resnet_CE_1/"
     data_loaders, image_datasets, idx_to_class = collector.get_datasets("/home/data/challenge_2022_miashs", batch_size=128)
     trainset, testset = data_loaders["train"], data_loaders["test"]
     img_train, img_test = image_datasets["train"], image_datasets["test"]
