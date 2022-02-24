@@ -35,13 +35,13 @@ if __name__ == "__main__":
     #print(device)
 
     # Data loading
-    idx2cls, cls2idx = collector.get_indices_and_classes("../data_testing/train")
-    SAMPLER = utils.get_sampler("./data_aux/frequencies.csv", cls2idx)
+    # idx2cls, cls2idx = collector.get_indices_and_classes("../data_testing/train")
+    # SAMPLER = utils.get_sampler("./data_aux/frequencies.csv", cls2idx)
     # idx2cls, cls2idx = collector.get_indices_and_classes("/home/data/challenge_2022_miashs/train")
     # SAMPLER = utils.get_sampler("/home/miashs3/SuperAlbert/data_aux/frequencies.csv", cls2idx)
 
-    trainset, train_img = collector.get_data_loader("../data_testing/train", sampler=SAMPLER, batch_size=BATCH_SIZE, num_workers=NUM_WORKERS)
-    # trainset, train_img = collector.get_data_loader("/home/data/challenge_2022_miashs/train", sampler=SAMPLER, batch_size=BATCH_SIZE, num_workers=NUM_WORKERS)
+    # trainset, train_img = collector.get_dataloader("../data_testing/train", sampler="./data_aux/frequencies.csv", batch_size=BATCH_SIZE, num_workers=NUM_WORKERS)
+    trainset, train_img = collector.get_dataloader("/home/data/challenge_2022_miashs/train", sampler="/home/miashs3/SuperAlbert/data_aux/frequencies.csv", batch_size=BATCH_SIZE, num_workers=NUM_WORKERS)
 
     # Init model
     model = create_model_b3(NB_CLASS)
@@ -68,8 +68,8 @@ if __name__ == "__main__":
 
 
     # Generate Predictions
-    testset, test_img = collector.get_data_loader("../data_testing/", batch_size=BATCH_SIZE, num_workers=NUM_WORKERS)
-    # testset, test_img = collector.get_data_loader("/home/data/challenge_2022_miashs/test/", batch_size=BATCH_SIZE, num_workers=NUM_WORKERS)
+    # testset, test_img = collector.get_dataloader("../data_testing/", batch_size=BATCH_SIZE, num_workers=NUM_WORKERS)
+    testset, test_img = collector.get_dataloader("/home/data/challenge_2022_miashs/test/", batch_size=BATCH_SIZE, num_workers=NUM_WORKERS)
 
     answers = predict.get_predictions(model, testset, test_img, idx2cls, device=device, ssout=SSOUT)
     print("Predictions done ...")
