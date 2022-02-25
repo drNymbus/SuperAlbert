@@ -38,3 +38,7 @@ def create_model_b3(output_size):
 def create_model_resnet(output_size):
     model = timm.create_model('resnet50', pretrained=True, num_classes=output_size)
     return model
+
+def create_model_densenet(output_size):
+    model = timm.create_model('densenet201', pretrained=True, num_classes=output_size)
+    return model

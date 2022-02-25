@@ -20,13 +20,13 @@ if __name__ == "__main__":
     warnings.filterwarnings('ignore', '.*interpolation.*', )
     # chillout timm
 
-    suffix = "b3_CE_1"
+    suffix = "densenet_CE_1"
     RESULTS_PATH = utils.create_model_dir("{}_{}".format(datetime.datetime.now(), suffix))
 
     NB_CLASS = 1081
 
-    EPOCHS = 20
-    BATCH_SIZE = 80
+    EPOCHS = 4
+    BATCH_SIZE = 128
     NUM_WORKERS = 16
 
     SSOUT = True
@@ -46,16 +46,16 @@ if __name__ == "__main__":
                                                     batch_size=BATCH_SIZE, num_workers=NUM_WORKERS)
     if SSOUT: print("Data loaded ...")
     # Init model
-    model = create_model_b3(NB_CLASS)
+    model = create_model_densenet(NB_CLASS)
     model = model.to(device)
     if SSOUT: print("Model loaded ...")
 
     # Define loss, optimizer and learning rate
-    optimizer_ft = create_optimizer(model, 'sgd', learning_rate=0.01, momentum=0.9, weight_decay=1e-4)
+    optimizer_ft = create_optimizer(model, 'sgd', learning_rate=0.1, momentum=0.9, weight_decay=1e-4)
     # optimizer_ft = optim.SGD(model.classifier[1].parameters(), lr=0.01, momentum=0.9, weight_decay=1e-4)
     # criterion = CCE(device=device)
     criterion = nn.CrossEntropyLoss()
-    learning_rate_decay = MultiStepLR(optimizer_ft, milestones=[15, 18], gamma=0.1)
+    learning_rate_decay = MultiStepLR(optimizer_ft, milestones=[3, 4], gamma=0.1)
 
     # Train and evaluate
     history_path = RESULTS_PATH + "history.csv"
